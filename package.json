@@ -14,7 +14,9 @@
     "Other"
   ],
   "activationEvents": [
-    "*"
+    "onCommand:process.emacsclient",
+    "onCommand:process.magitStatus",
+    "onCommand:process.openFolders"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -26,6 +28,10 @@
       {
         "command": "process.magitStatus",
         "title": "Emacs Magit Status"
+      },
+      {
+        "command": "process.openFolders",
+        "title": "Open Folders"
       }
     ]
   },
