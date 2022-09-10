@@ -20,12 +20,12 @@
   "contributes": {
     "commands": [
       {
-        "command": "process.magitStatus",
-        "title": "Emacs Magit Status"
-      },
-      {
         "command": "process.emacsclient",
         "title": "Emacs"
+      },
+      {
+        "command": "process.magitStatus",
+        "title": "Emacs Magit Status"
       }
     ]
   },
