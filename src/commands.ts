@@ -1,6 +1,7 @@
-const { readFile } = require('fs');
+const { readFile } = require('node:fs/promises');
+const { accessSync, realpathSync } = require('node:fs');
 const { spawn } = require('node:child_process');
-const { dirname, resolve } = require('node:path');
+const { dirname, join, resolve } = require('node:path');
 import * as vscode from 'vscode';
 
 const outputChannel = vscode.window.createOutputChannel('Process');
@@ -13,8 +14,9 @@ export async function emacsclient() {
 }
 
 export async function magitStatus(): Promise<void> {
-  const cwd = dirname(vscode.window.activeTextEditor?.document.uri.path);
-  log(`Running in ${cwd} (resolve => ${resolve(cwd)})`);
+  const nominalCwd = dirname(vscode.window.activeTextEditor?.document.uri.path);
+  const cwd = realpathSync(nominalCwd);
+  log(`Running in ${nominalCwd} (resolve => ${cwd})`);
   const result = spawn('bash', ['/Users/ddavison/src/emacs-config/bin/emacs-magit-status'], { cwd });
   result.stderr.on('data', (data: string) => {
     log(`stderr: ${data}`);
@@ -31,7 +33,7 @@ export async function openFolders(): Promise<void> {
       .split('\n')
       .filter((s: string) => s.length > 0)
       .map(expandPath)
-      .map(dirname)
+      .map(isProjectDirectory)
   );
   for (const dir of dirs.keys()) {
     let success = await vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(dir), {
@@ -41,6 +43,13 @@ export async function openFolders(): Promise<void> {
       log(`Failed to open folder: ${dir}`);
     }
   }
+}
+
+function isProjectDirectory(path: string): Boolean {
+  const dir: string = path.endsWith('/') ? path : dirname(path);
+  const isProjectDir = accessSync(join(path, '.git'));
+  log(`${isProjectDir ? 'Project' : 'Not a project'} dir: ${path}`);
+  return isProjectDir;
 }
 
 function expandPath(path: string): string {
