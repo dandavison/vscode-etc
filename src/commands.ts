@@ -22,7 +22,7 @@ export async function magitStatus(): Promise<void> {
   log(`Running in ${nominalCwd} (resolve => ${cwd})`);
   const result = spawn(
     'bash',
-    ['/Users/dan/src/emacs-config/bin/emacs-magit-status'],
+    ['/Users/dan/src/devenv/emacs-config/bin/emacs-magit-status'],
     { cwd }
   );
   result.stderr.on('data', (data: string) => {
