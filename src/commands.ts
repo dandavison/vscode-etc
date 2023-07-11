@@ -3,6 +3,9 @@ const { accessSync, realpathSync } = require('node:fs');
 const { spawn } = require('node:child_process');
 const { dirname, join, resolve } = require('node:path');
 import * as vscode from 'vscode';
+import { copyGithubUrl } from './commands/copyGithubUrl';
+
+export { copyGithubUrl };
 
 const outputChannel = vscode.window.createOutputChannel('Process');
 const log = outputChannel.appendLine;
@@ -17,7 +20,11 @@ export async function magitStatus(): Promise<void> {
   const nominalCwd = dirname(vscode.window.activeTextEditor?.document.uri.path);
   const cwd = realpathSync(nominalCwd);
   log(`Running in ${nominalCwd} (resolve => ${cwd})`);
-  const result = spawn('bash', ['/Users/dan/src/emacs-config/bin/emacs-magit-status'], { cwd });
+  const result = spawn(
+    'bash',
+    ['/Users/dan/src/emacs-config/bin/emacs-magit-status'],
+    { cwd }
+  );
   result.stderr.on('data', (data: string) => {
     log(`stderr: ${data}`);
   });
@@ -36,9 +43,13 @@ export async function openFolders(): Promise<void> {
       .map(isProjectDirectory)
   );
   for (const dir of dirs.keys()) {
-    let success = await vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(dir), {
-      forceNewWindow: true,
-    });
+    let success = await vscode.commands.executeCommand(
+      'vscode.openFolder',
+      vscode.Uri.file(dir),
+      {
+        forceNewWindow: true,
+      }
+    );
     if (!success) {
       log(`Failed to open folder: ${dir}`);
     }
