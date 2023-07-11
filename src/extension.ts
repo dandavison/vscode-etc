@@ -3,6 +3,7 @@ import * as commands from './commands';
 
 export function activate(context: vscode.ExtensionContext) {
   const catalog: [string, () => Promise<void>][] = [
+    ['process.copyGithubUrl', commands.copyGithubUrl],
     ['process.emacsclient', commands.emacsclient],
     ['process.magitStatus', commands.magitStatus],
     ['process.openFolders', commands.openFolders],

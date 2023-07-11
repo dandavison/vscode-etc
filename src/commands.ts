@@ -3,6 +3,9 @@ const { accessSync, realpathSync } = require('node:fs');
 const { spawn } = require('node:child_process');
 const { dirname, join, resolve } = require('node:path');
 import * as vscode from 'vscode';
+import { copyGithubUrl } from './commands/copyGithubUrl';
+
+export { copyGithubUrl };
 
 const outputChannel = vscode.window.createOutputChannel('Process');
 const log = outputChannel.appendLine;

@@ -14,6 +14,7 @@
     "Other"
   ],
   "activationEvents": [
+    "onCommand:process.copyGithubUrl",
     "onCommand:process.emacsclient",
     "onCommand:process.magitStatus",
     "onCommand:process.openFolders"
@@ -21,6 +22,10 @@
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
+      {
+        "command": "process.copyGithubUrl",
+        "title": "Copy GitHub URL"
+      },
       {
         "command": "process.emacsclient",
         "title": "Emacs"
