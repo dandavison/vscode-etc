@@ -8,7 +8,9 @@ export function activate(context: vscode.ExtensionContext) {
     ['process.openFolders', commands.openFolders],
   ];
   for (const [command, handler] of catalog) {
-    context.subscriptions.push(vscode.commands.registerCommand(command, handler));
+    context.subscriptions.push(
+      vscode.commands.registerCommand(command, handler)
+    );
   }
 }
 
