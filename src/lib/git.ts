@@ -1,6 +1,5 @@
 import * as child_process from 'child_process';
 import * as path from 'path';
-import { URL } from 'url';
 
 interface IGitRepo {
   root: string;
@@ -33,15 +32,13 @@ function getGitRepo(root: string): IGitRepo {
   if (!(root in gitRepos)) {
     const url = git('-C', root, 'remote', 'get-url', 'origin');
     if (!url) {
-      console.error(`Git repo at ${root} has no remote named 'origin'`);
-      process.exit(1);
+      throw new Error(`Git repo at ${root} has no remote named 'origin'`);
     }
     const commit =
       git('-C', root, 'rev-parse', 'origin/main') ||
       git('-C', root, 'rev-parse', 'origin/master');
     if (!commit) {
-      console.error(`Neither origin/main nor origin/master exist at ${root}`);
-      process.exit(1);
+      throw new Error(`Neither origin/main nor origin/master exist at ${root}`);
     }
     gitRepos[root] = { root, url, commit };
   }
@@ -49,9 +46,11 @@ function getGitRepo(root: string): IGitRepo {
 }
 
 function getRepoName(url: string): string {
-  const repoUrl = new URL(url);
-  const match = /\/(?<name>.+)\.git$/.exec(repoUrl.pathname);
-  return match ? match.groups!.name : '';
+  const match = /^git@github.com:(?<name>.+)(\.git)?$/.exec(url);
+  if (!match) {
+    throw new Error(`Could not determine repo name from url: ${url}`);
+  }
+  return match.groups!.name;
 }
 
 function formatGitHubUrl(fileData: IFileData): string {
@@ -60,16 +59,15 @@ function formatGitHubUrl(fileData: IFileData): string {
   }/${fileData.path}#L${fileData.line}`;
 }
 
-export function makeGithubUrl(file: string, line: number): string | null {
+export function makeGithubUrl(file: string, line: number): string {
   const p = path.parse(file);
   const root = git('-C', p.dir, 'rev-parse', '--show-toplevel');
-  if (root) {
-    const repo = getGitRepo(root);
-    const relativePath = path.relative(repo.root, file);
-    const fileData: IFileData = { repo, path: relativePath, line };
-
-    return formatGitHubUrl(fileData);
-  } else {
-    return null;
+  if (!root) {
+    throw new Error(`Could not determine git root dir for file: ${file}`);
   }
+  const repo = getGitRepo(root);
+  const relativePath = path.relative(repo.root, file);
+  const fileData: IFileData = { repo, path: relativePath, line };
+  const url = formatGitHubUrl(fileData);
+  return url;
 }
