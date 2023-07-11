@@ -16,24 +16,32 @@ interface IFileData {
 
 const gitRepos: Record<string, IGitRepo> = {};
 
-function git(...args: string[]): string {
-  const output = child_process.execFileSync('git', args, { encoding: 'utf8' });
+function git(...args: string[]): string | null {
+  let output;
+  try {
+    output = child_process.execFileSync('git', args, {
+      encoding: 'utf8',
+    });
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
   return output.trim();
 }
 
 function getGitRepo(root: string): IGitRepo {
   if (!(root in gitRepos)) {
     const url = git('-C', root, 'remote', 'get-url', 'origin');
-    let commit = '';
-    try {
-      commit = git('-C', root, 'rev-parse', 'origin/main');
-    } catch (err) {
-      try {
-        commit = git('-C', root, 'rev-parse', 'origin/master');
-      } catch (err) {
-        console.error(`Neither origin/main nor origin/master exist at ${root}`);
-        process.exit(1);
-      }
+    if (!url) {
+      console.error(`Git repo at ${root} has no remote named 'origin'`);
+      process.exit(1);
+    }
+    const commit =
+      git('-C', root, 'rev-parse', 'origin/main') ||
+      git('-C', root, 'rev-parse', 'origin/master');
+    if (!commit) {
+      console.error(`Neither origin/main nor origin/master exist at ${root}`);
+      process.exit(1);
     }
     gitRepos[root] = { root, url, commit };
   }
@@ -52,12 +60,16 @@ function formatGitHubUrl(fileData: IFileData): string {
   }/${fileData.path}#L${fileData.line}`;
 }
 
-export function makeGithubUrl(file: string, line: number): string {
+export function makeGithubUrl(file: string, line: number): string | null {
   const p = path.parse(file);
   const root = git('-C', p.dir, 'rev-parse', '--show-toplevel');
-  const repo = getGitRepo(root);
-  const relativePath = path.relative(repo.root, file);
-  const fileData: IFileData = { repo, path: relativePath, line };
+  if (root) {
+    const repo = getGitRepo(root);
+    const relativePath = path.relative(repo.root, file);
+    const fileData: IFileData = { repo, path: relativePath, line };
 
-  return formatGitHubUrl(fileData);
+    return formatGitHubUrl(fileData);
+  } else {
+    return null;
+  }
 }
