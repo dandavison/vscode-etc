@@ -1,3 +1,4 @@
+import { realpathSync } from 'fs';
 import * as child_process from 'child_process';
 import * as path from 'path';
 
@@ -59,7 +60,8 @@ function formatGitHubUrl(fileData: IFileData): string {
   }/${fileData.path}#L${fileData.line}`;
 }
 
-export function makeGithubUrl(file: string, line: number): string {
+export function makeGithubUrl(nonCanonicalFile: string, line: number): string {
+  const file = realpathSync(nonCanonicalFile);
   const p = path.parse(file);
   const root = git('-C', p.dir, 'rev-parse', '--show-toplevel');
   if (!root) {
