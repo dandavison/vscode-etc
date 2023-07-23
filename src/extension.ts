@@ -5,9 +5,9 @@ import { magitStatus } from './commands/magit-status';
 
 export function activate(context: vscode.ExtensionContext) {
   const catalog: [string, () => Promise<void>][] = [
-    ['process.copyGithubUrl', copyGithubUrl],
-    ['process.emacsclient', emacsclient],
-    ['process.magitStatus', magitStatus],
+    ['etc.copyGithubUrl', copyGithubUrl],
+    ['etc.emacsclient', emacsclient],
+    ['etc.magitStatus', magitStatus],
   ];
   for (const [command, handler] of catalog) {
     context.subscriptions.push(
