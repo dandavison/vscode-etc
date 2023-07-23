@@ -1,9 +1,9 @@
 {
-  "name": "process",
-  "displayName": "Process",
-  "description": "Start child processes",
+  "name": "etc",
+  "displayName": "Etc",
+  "description": "Miscellaneous modifications",
   "repository": {
-    "url": "https://github.com/dandavison/vscode-process",
+    "url": "https://github.com/dandavison/vscode-etc",
     "type": "git"
   },
   "version": "0.0.1",
@@ -14,28 +14,28 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:process.copyGithubUrl",
-    "onCommand:process.emacsclient",
-    "onCommand:process.magitStatus",
-    "onCommand:process.openFolders"
+    "onCommand:etc.copyGithubUrl",
+    "onCommand:etc.emacsclient",
+    "onCommand:etc.magitStatus",
+    "onCommand:etc.openFolders"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "process.copyGithubUrl",
+        "command": "etc.copyGithubUrl",
         "title": "Copy GitHub URL"
       },
       {
-        "command": "process.emacsclient",
+        "command": "etc.emacsclient",
         "title": "Emacs"
       },
       {
-        "command": "process.magitStatus",
+        "command": "etc.magitStatus",
         "title": "Emacs Magit Status"
       },
       {
-        "command": "process.openFolders",
+        "command": "etc.openFolders",
         "title": "Open Folders"
       }
     ]
