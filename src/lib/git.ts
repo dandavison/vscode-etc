@@ -55,9 +55,9 @@ function getRepoName(url: string): string {
 }
 
 function formatGitHubUrl(fileData: IFileData): string {
-  return `https://github.com/${getRepoName(fileData.repo.url)}/blob/${
+  return `http://o/${getRepoName(fileData.repo.url)}/blob/${
     fileData.repo.commit
-  }/${fileData.path}#L${fileData.line}`;
+  }/${fileData.path}?line=${fileData.line}`;
 }
 
 export function makeGithubUrl(nonCanonicalFile: string, line: number): string {
