@@ -1,6 +1,7 @@
 import { realpathSync } from 'fs';
 import * as child_process from 'child_process';
 import * as path from 'path';
+// import * as vscode from 'vscode';
 
 interface IGitRepo {
   root: string;
@@ -35,11 +36,9 @@ function getGitRepo(root: string): IGitRepo {
     if (!url) {
       throw new Error(`Git repo at ${root} has no remote named 'origin'`);
     }
-    const commit =
-      git('-C', root, 'rev-parse', 'origin/main') ||
-      git('-C', root, 'rev-parse', 'origin/master');
+    const commit = git('-C', root, 'rev-parse', 'HEAD');
     if (!commit) {
-      throw new Error(`Neither origin/main nor origin/master exist at ${root}`);
+      throw new Error(`Could not determine HEAD commit at ${root}`);
     }
     gitRepos[root] = { root, url, commit };
   }
@@ -47,9 +46,10 @@ function getGitRepo(root: string): IGitRepo {
 }
 
 function getRepoName(url: string): string {
-  const match = /^git@github.com:(?<name>.+)(\.git)?$/.exec(url);
+  const regex = /^git@github.com:(?<name>[^.]+)(\.git)?$/;
+  const match = regex.exec(url);
   if (!match) {
-    throw new Error(`Could not determine repo name from url: ${url}`);
+    throw new Error(`Regex ${regex} did not match url: ${url}`);
   }
   return match.groups!.name;
 }
@@ -71,5 +71,14 @@ export function makeGithubUrl(nonCanonicalFile: string, line: number): string {
   const relativePath = path.relative(repo.root, file);
   const fileData: IFileData = { repo, path: relativePath, line };
   const url = formatGitHubUrl(fileData);
+  // vscode.window.showInformationMessage(`
+  //   file:    ${file}
+  //   root:    ${repo.root}
+  //   commit:  ${repo.commit}
+  //   repoUrl: ${repo.url}
+  //   relPath: ${fileData.path}
+  //   line:    ${line}
+  //   url:     ${url}
+  // `);
   return url;
 }
