@@ -21,6 +21,7 @@ type Coords = {
   path: string;
   line: number;
   text: string;
+  selection: string;
 };
 
 function getCoords(): Coords | null {
@@ -31,10 +32,12 @@ function getCoords(): Coords | null {
   const path = editor.document.uri.path;
   const line = editor.selection.active.line;
   const text = editor.document.lineAt(line).text;
+  const selection = editor.document.getText(editor.selection);
   return {
     path,
     line,
     text,
+    selection,
   };
 }
 
@@ -58,7 +61,8 @@ function _copyGitHubUrl({
       ? formatWormholeGitHubUrl(repoFile, coords.line + 1)
       : formatGitHubUrl(repoFile, coords.line + 1);
     if (markdown) {
-      link = `[\`${coords.text.trim()}\`](${link})`;
+      const text = coords.selection || coords.text.trim();
+      link = `[\`${text}\`](${link})`;
     }
     vscode.env.clipboard.writeText(link).then(() => {
       let disposable = vscode.window.setStatusBarMessage('Copied GitHub URL');
