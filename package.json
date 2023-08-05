@@ -27,6 +27,18 @@
         "title": "Copy GitHub URL"
       },
       {
+        "command": "etc.copyGithubMarkdownUrl",
+        "title": "Copy GitHub markdown URL"
+      },
+      {
+        "command": "etc.copyWormholeUrl",
+        "title": "Copy Wormhole URL"
+      },
+      {
+        "command": "etc.copyWormholeMarkdownUrl",
+        "title": "Copy Wormhole markdown URL"
+      },
+      {
         "command": "etc.emacsclient",
         "title": "Emacs"
       },

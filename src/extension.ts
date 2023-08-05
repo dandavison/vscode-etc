@@ -7,11 +7,8 @@ export function activate(context: vscode.ExtensionContext) {
   const catalog: [string, () => Promise<void>][] = [
     ['etc.copyGithubUrl', githubUrl.copyGithubUrl],
     ['etc.copyGithubMarkdownUrl', githubUrl.copyGithubMarkdownUrl],
-    ['etc.copyWormholeGithubUrl', githubUrl.copyWormholeGithubUrl],
-    [
-      'etc.copyWormholeGithubMarkdownUrl',
-      githubUrl.copyWormholeGithubMarkdownUrl,
-    ],
+    ['etc.copyWormholeUrl', githubUrl.copyWormholeUrl],
+    ['etc.copyWormholeMarkdownUrl', githubUrl.copyWormholeMarkdownUrl],
     ['etc.emacsclient', emacsclient],
     ['etc.magitStatus', magitStatus],
   ];

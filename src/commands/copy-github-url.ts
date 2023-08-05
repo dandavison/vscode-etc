@@ -10,11 +10,11 @@ export async function copyGithubMarkdownUrl() {
   _copyGitHubUrl({ markdown: true, wormholeUrl: false });
 }
 
-export async function copyWormholeGithubUrl() {
+export async function copyWormholeUrl() {
   _copyGitHubUrl({ markdown: false, wormholeUrl: true });
 }
 
-export async function copyWormholeGithubMarkdownUrl() {
+export async function copyWormholeMarkdownUrl() {
   _copyGitHubUrl({ markdown: true, wormholeUrl: true });
 }
 
