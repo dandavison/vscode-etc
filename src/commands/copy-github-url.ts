@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as wormhole from '../lib/wormhole';
 import * as github from '../lib/github';
+import { log } from '../log';
 
 export async function copyGithubUrl() {
   _copyGitHubUrl({ markdown: false, wormholeUrl: false });
@@ -64,6 +65,7 @@ function _copyGitHubUrl({
       const text = coords.selection || coords.text.trim();
       link = `[\`${text}\`](${link})`;
     }
+    log(`Created link: ${link}`);
     vscode.env.clipboard.writeText(link).then(() => {
       let disposable = vscode.window.setStatusBarMessage('Copied GitHub URL');
       setTimeout(() => {

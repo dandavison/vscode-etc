@@ -1,7 +1,7 @@
 import { realpathSync } from 'fs';
 import * as child_process from 'child_process';
 import * as path from 'path';
-// import * as vscode from 'vscode';
+import { log } from '../log';
 
 interface IGitRepo {
   root: string;
@@ -53,13 +53,12 @@ export function getGitRepoFile(nonCanonicalFile: string): IFileData {
   }
   const repo = getGitRepo(root);
   const relativePath = path.relative(repo.root, file);
+  log(`
+    file:    ${file}
+    root:    ${repo.root}
+    commit:  ${repo.commit}
+    repoUrl: ${repo.url}
+    relativePath: ${relativePath}
+  `);
   return { repo, path: relativePath };
-  // vscode.window.showInformationMessage(`
-  //   file:    ${file}
-  //   root:    ${repo.root}
-  //   commit:  ${repo.commit}
-  //   repoUrl: ${repo.url}
-  //   relPath: ${fileData.path}
-  //   url:     ${url}
-  // `);
 }
