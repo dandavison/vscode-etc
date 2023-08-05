@@ -1,20 +1,21 @@
 import * as vscode from 'vscode';
-import { IFileData, getGitRepoFile } from '../lib/git';
+import * as wormhole from '../lib/wormhole';
+import * as github from '../lib/github';
 
 export async function copyGithubUrl() {
-  _copyGitHubUrl({ markdown: false, wormhole: false });
+  _copyGitHubUrl({ markdown: false, wormholeUrl: false });
 }
 
 export async function copyGithubMarkdownUrl() {
-  _copyGitHubUrl({ markdown: true, wormhole: false });
+  _copyGitHubUrl({ markdown: true, wormholeUrl: false });
 }
 
 export async function copyWormholeGithubUrl() {
-  _copyGitHubUrl({ markdown: false, wormhole: true });
+  _copyGitHubUrl({ markdown: false, wormholeUrl: true });
 }
 
 export async function copyWormholeGithubMarkdownUrl() {
-  _copyGitHubUrl({ markdown: true, wormhole: true });
+  _copyGitHubUrl({ markdown: true, wormholeUrl: true });
 }
 
 type Coords = {
@@ -43,10 +44,10 @@ function getCoords(): Coords | null {
 
 function _copyGitHubUrl({
   markdown,
-  wormhole,
+  wormholeUrl,
 }: {
   markdown: boolean;
-  wormhole: boolean;
+  wormholeUrl: boolean;
 }) {
   const coords = getCoords();
   if (!coords) {
@@ -56,10 +57,9 @@ function _copyGitHubUrl({
     return;
   }
   try {
-    const repoFile = getGitRepoFile(coords.path);
-    var link = wormhole
-      ? formatWormholeGitHubUrl(repoFile, coords.line + 1)
-      : formatGitHubUrl(repoFile, coords.line + 1);
+    var link = wormholeUrl
+      ? wormhole.makeUrl(coords.path, coords.line + 1)
+      : github.makeUrl(coords.path, coords.line + 1);
     if (markdown) {
       const text = coords.selection || coords.text.trim();
       link = `[\`${text}\`](${link})`;
@@ -75,27 +75,4 @@ function _copyGitHubUrl({
       `Could not determine GitHub URL for ${coords.path}:${coords.line}: ${error}`
     );
   }
-}
-
-function getRepoName(url: string): string {
-  const regex = /^git@github.com:(?<name>[^.]+)(\.git)?$/;
-  const match = regex.exec(url);
-  if (!match) {
-    throw new Error(`Regex ${regex} did not match url: ${url}`);
-  }
-  return match.groups!.name;
-}
-
-const WORMHOLE_DOMAIN = 'o';
-
-function formatWormholeGitHubUrl(fileData: IFileData, line: number): string {
-  return `http://${WORMHOLE_DOMAIN}/${getRepoName(fileData.repo.url)}/blob/${
-    fileData.repo.commit
-  }/${fileData.path}?line=${line}`;
-}
-
-function formatGitHubUrl(fileData: IFileData, line: number): string {
-  return `https://${getRepoName(fileData.repo.url)}/blob/${
-    fileData.repo.commit
-  }/${fileData.path}#L${line}`;
 }
