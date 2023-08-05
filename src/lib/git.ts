@@ -9,10 +9,9 @@ interface IGitRepo {
   commit: string;
 }
 
-interface IFileData {
+export interface IFileData {
   repo: IGitRepo;
   path: string;
-  line: number;
 }
 
 const gitRepos: Record<string, IGitRepo> = {};
@@ -45,22 +44,7 @@ function getGitRepo(root: string): IGitRepo {
   return gitRepos[root];
 }
 
-function getRepoName(url: string): string {
-  const regex = /^git@github.com:(?<name>[^.]+)(\.git)?$/;
-  const match = regex.exec(url);
-  if (!match) {
-    throw new Error(`Regex ${regex} did not match url: ${url}`);
-  }
-  return match.groups!.name;
-}
-
-function formatGitHubUrl(fileData: IFileData): string {
-  return `http://o/${getRepoName(fileData.repo.url)}/blob/${
-    fileData.repo.commit
-  }/${fileData.path}?line=${fileData.line}`;
-}
-
-export function makeGithubUrl(nonCanonicalFile: string, line: number): string {
+export function getGitRepoFile(nonCanonicalFile: string): IFileData {
   const file = realpathSync(nonCanonicalFile);
   const p = path.parse(file);
   const root = git('-C', p.dir, 'rev-parse', '--show-toplevel');
@@ -69,16 +53,13 @@ export function makeGithubUrl(nonCanonicalFile: string, line: number): string {
   }
   const repo = getGitRepo(root);
   const relativePath = path.relative(repo.root, file);
-  const fileData: IFileData = { repo, path: relativePath, line };
-  const url = formatGitHubUrl(fileData);
+  return { repo, path: relativePath };
   // vscode.window.showInformationMessage(`
   //   file:    ${file}
   //   root:    ${repo.root}
   //   commit:  ${repo.commit}
   //   repoUrl: ${repo.url}
   //   relPath: ${fileData.path}
-  //   line:    ${line}
   //   url:     ${url}
   // `);
-  return url;
 }
