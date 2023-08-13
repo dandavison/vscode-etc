@@ -1,7 +1,7 @@
 import * as git from './git';
 
 export function getRepoName(url: string): string {
-  const regex = /^git@github.com:(?<name>[^.]+)(\.git)?$/;
+  const regex = /^[^@]+@github.com:(?<name>[^.]+)(\.git)?$/;
   const match = regex.exec(url);
   if (!match) {
     throw new Error(`Regex ${regex} did not match url: ${url}`);
