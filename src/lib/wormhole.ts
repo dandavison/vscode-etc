@@ -1,7 +1,7 @@
 import * as git from './git';
 import * as github from './github';
 
-const WORMHOLE_DOMAIN = 'o';
+const WORMHOLE_DOMAIN = 'wormhole';
 
 export function makeUrl(path: string, line: number): string {
   const fileData = git.getGitRepoFile(path);
