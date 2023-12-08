@@ -7,14 +7,13 @@ interface IGitRepo {
   root: string;
   url: string;
   commit: string;
+  branch: string;
 }
 
 export interface IFileData {
   repo: IGitRepo;
   path: string;
 }
-
-const gitRepos: Record<string, IGitRepo> = {};
 
 function git(...args: string[]): string | null {
   let output;
@@ -30,18 +29,19 @@ function git(...args: string[]): string | null {
 }
 
 function getGitRepo(root: string): IGitRepo {
-  if (!(root in gitRepos)) {
-    const url = git('-C', root, 'remote', 'get-url', 'origin');
-    if (!url) {
-      throw new Error(`Git repo at ${root} has no remote named 'origin'`);
-    }
-    const commit = git('-C', root, 'rev-parse', 'HEAD');
-    if (!commit) {
-      throw new Error(`Could not determine HEAD commit at ${root}`);
-    }
-    gitRepos[root] = { root, url, commit };
+  const url = git('-C', root, 'remote', 'get-url', 'origin');
+  if (!url) {
+    throw new Error(`Git repo at ${root} has no remote named 'origin'`);
   }
-  return gitRepos[root];
+  const commit = git('-C', root, 'rev-parse', 'HEAD');
+  if (!commit) {
+    throw new Error(`Could not determine HEAD commit at ${root}`);
+  }
+  const branch = git('-C', root, 'branch', '--show-current');
+  if (!branch) {
+    throw new Error(`Could not determine branch at ${root}`);
+  }
+  return { root, url, commit, branch };
 }
 
 export function getGitRepoFile(nonCanonicalFile: string): IFileData {
