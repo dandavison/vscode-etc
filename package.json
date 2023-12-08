@@ -1,6 +1,6 @@
 {
-  "name": "etc",
-  "displayName": "Etc",
+  "name": "dandavison-etc",
+  "displayName": "dandavison-etc",
   "description": "Miscellaneous modifications",
   "repository": {
     "url": "https://github.com/dandavison/vscode-etc",
