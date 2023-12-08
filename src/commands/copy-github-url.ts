@@ -1,22 +1,13 @@
 import * as vscode from 'vscode';
-import * as wormhole from '../lib/wormhole';
 import * as github from '../lib/github';
 import { log } from '../log';
 
 export async function copyGithubUrl() {
-  _copyGitHubUrl({ markdown: false, wormholeUrl: false });
+  _copyGitHubUrl({ markdown: false });
 }
 
 export async function copyGithubMarkdownUrl() {
-  _copyGitHubUrl({ markdown: true, wormholeUrl: false });
-}
-
-export async function copyWormholeUrl() {
-  _copyGitHubUrl({ markdown: false, wormholeUrl: true });
-}
-
-export async function copyWormholeMarkdownUrl() {
-  _copyGitHubUrl({ markdown: true, wormholeUrl: true });
+  _copyGitHubUrl({ markdown: true });
 }
 
 type Coords = {
@@ -43,13 +34,7 @@ function getCoords(): Coords | null {
   };
 }
 
-function _copyGitHubUrl({
-  markdown,
-  wormholeUrl,
-}: {
-  markdown: boolean;
-  wormholeUrl: boolean;
-}) {
+function _copyGitHubUrl({ markdown }: { markdown: boolean }) {
   const coords = getCoords();
   if (!coords) {
     vscode.window.showInformationMessage(
@@ -58,9 +43,7 @@ function _copyGitHubUrl({
     return;
   }
   try {
-    var link = wormholeUrl
-      ? wormhole.makeUrl(coords.path, coords.line + 1)
-      : github.makeUrl(coords.path, coords.line + 1);
+    let link = github.makeUrl(coords.path, coords.line + 1);
     if (markdown) {
       const text = coords.selection || coords.text.trim();
       link = `[\`${text}\`](${link})`;
