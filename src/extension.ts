@@ -15,6 +15,24 @@ export function activate(context: vscode.ExtensionContext) {
       vscode.commands.registerCommand(command, handler)
     );
   }
+
+  showExtensionVersion();
 }
 
 export function deactivate() {}
+
+function showExtensionVersion() {
+  const extensionId = 'dandavison.vscode-etc';
+  const extension = vscode.extensions.getExtension(extensionId);
+  const extensionName =
+    extension?.packageJSON.name ?? '[failed to locate extension]';
+  const extensionVersion = extension?.packageJSON.version ?? '?.?.?';
+
+  const statusBarItem = vscode.window.createStatusBarItem(
+    vscode.StatusBarAlignment.Right,
+    100
+  );
+  statusBarItem.text = `${extensionName} v${extensionVersion}`;
+  statusBarItem.tooltip = `${extensionName} Version: ${extensionVersion}`;
+  statusBarItem.show();
+}
