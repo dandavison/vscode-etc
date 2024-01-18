@@ -1,5 +1,10 @@
-install: build
-	code --install-extension dandavison-etc-0.0.1.vsix --force
+install: build uninstall
+	code --install-extension vscode-etc-*.vsix --force
+	code --list-extensions --show-versions | grep vscode-etc
+
+uninstall:
+	code --uninstall-extension dandavison.vscode-etc || true
+	! code --list-extensions --show-versions | grep vscode-etc
 
 build:
-	vsce package
+	vsce package > /dev/null
