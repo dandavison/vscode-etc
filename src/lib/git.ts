@@ -8,6 +8,7 @@ interface IGitRepo {
   url: string;
   commit: string;
   branch: string;
+  defaultBranch: string;
 }
 
 export interface IFileData {
@@ -33,15 +34,21 @@ function getGitRepo(root: string): IGitRepo {
   if (!url) {
     throw new Error(`Git repo at ${root} has no remote named 'origin'`);
   }
+
   const commit = git('-C', root, 'rev-parse', 'HEAD');
   if (!commit) {
     throw new Error(`Could not determine HEAD commit at ${root}`);
   }
+
   const branch = git('-C', root, 'branch', '--show-current');
   if (!branch) {
     throw new Error(`Could not determine branch at ${root}`);
   }
-  return { root, url, commit, branch };
+
+  const hasMaster = git('-C', root, 'show-ref', 'refs/remotes/origin/master');
+  const defaultBranch = hasMaster ? 'master' : 'main';
+
+  return { root, url, commit, branch, defaultBranch };
 }
 
 export function getGitRepoFile(nonCanonicalFile: string): IFileData {
