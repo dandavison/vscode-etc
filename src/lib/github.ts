@@ -11,7 +11,7 @@ export function getRepoName(url: string): string {
 
 export function makeUrl(path: string, line: number): string {
   const fileData = git.getGitRepoFile(path);
-  return `https://github.com/${getRepoName(fileData.repo.url)}/blob/${
-    fileData.repo.branch
-  }/${fileData.path}#L${line}`;
+  return `https://github.com/${getRepoName(fileData.repo.url)}/blob/main/${
+    fileData.path
+  }#L${line}`;
 }
