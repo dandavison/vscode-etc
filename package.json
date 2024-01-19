@@ -31,6 +31,10 @@
         "title": "Emacs"
       },
       {
+        "command": "etc.gitBlame",
+        "title": "Git Blame"
+      },
+      {
         "command": "etc.magitStatus",
         "title": "Emacs Magit Status"
       }

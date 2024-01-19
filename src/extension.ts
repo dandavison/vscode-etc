@@ -2,11 +2,13 @@ import * as vscode from 'vscode';
 import * as githubUrl from './commands/copy-github-url';
 import { emacsclient } from './commands/emacsclient';
 import { magitStatus } from './commands/magit-status';
+import { gitBlame } from './commands/git-blame';
 
 export function activate(context: vscode.ExtensionContext) {
   const catalog: [string, () => Promise<void>][] = [
     ['etc.copyGithubUrl', githubUrl.copyGithubUrl],
     ['etc.copyGithubMarkdownUrl', githubUrl.copyGithubMarkdownUrl],
+    ['etc.gitBlame', gitBlame],
     ['etc.emacsclient', emacsclient],
     ['etc.magitStatus', magitStatus],
   ];
