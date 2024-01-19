@@ -14,11 +14,7 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [
-    "onCommand:etc.copyGithubUrl",
-    "onCommand:etc.emacsclient",
-    "onCommand:etc.magitStatus"
-  ],
+  "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
