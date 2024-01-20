@@ -4,6 +4,7 @@ import { emacsclient } from './commands/emacsclient';
 import { magitStatus } from './commands/magit-status';
 import { gitBlame } from './commands/git-blame';
 import { zoomPane } from './commands/zoom-pane';
+import { showExtensionVersion } from './commands/show-extension-version';
 
 export function activate(context: vscode.ExtensionContext) {
   const catalog: [string, () => Promise<void>][] = [
@@ -24,19 +25,3 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {}
-
-function showExtensionVersion() {
-  const extensionId = 'dandavison.vscode-etc';
-  const extension = vscode.extensions.getExtension(extensionId);
-  const extensionName =
-    extension?.packageJSON.name ?? '[failed to locate extension]';
-  const extensionVersion = extension?.packageJSON.version ?? '?.?.?';
-
-  const statusBarItem = vscode.window.createStatusBarItem(
-    vscode.StatusBarAlignment.Right,
-    100
-  );
-  statusBarItem.text = `${extensionName} v${extensionVersion}`;
-  statusBarItem.tooltip = `${extensionName} Version: ${extensionVersion}`;
-  statusBarItem.show();
-}
