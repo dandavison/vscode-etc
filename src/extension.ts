@@ -3,6 +3,7 @@ import * as githubUrl from './commands/copy-github-url';
 import { emacsclient } from './commands/emacsclient';
 import { magitStatus } from './commands/magit-status';
 import { gitBlame } from './commands/git-blame';
+import { zoomPane } from './commands/zoom-pane';
 
 export function activate(context: vscode.ExtensionContext) {
   const catalog: [string, () => Promise<void>][] = [
@@ -11,6 +12,7 @@ export function activate(context: vscode.ExtensionContext) {
     ['etc.gitBlame', gitBlame],
     ['etc.emacsclient', emacsclient],
     ['etc.magitStatus', magitStatus],
+    ['etc.zoomPane', zoomPane],
   ];
   for (const [command, handler] of catalog) {
     context.subscriptions.push(

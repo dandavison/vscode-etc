@@ -37,6 +37,10 @@
       {
         "command": "etc.magitStatus",
         "title": "Emacs Magit Status"
+      },
+      {
+        "command": "etc.zoomPane",
+        "title": "Zoom Pane"
       }
     ]
   },
