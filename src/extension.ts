@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as githubUrl from './commands/copy-github-url';
 import { emacsclient } from './commands/emacsclient';
-import { magitStatus } from './commands/magit-status';
+import { magitStatus, magitShow } from './commands/magit-status';
 import { gitBlame } from './commands/git-blame';
 import { zoomPane } from './commands/zoom-pane';
 import { showExtensionVersion } from './commands/show-extension-version';
@@ -14,6 +14,7 @@ export function activate(context: vscode.ExtensionContext) {
     ['etc.gitBlame', gitBlame],
     ['etc.emacsclient', emacsclient],
     ['etc.magitStatus', magitStatus],
+    ['etc.magitShow', magitShow],
     ['etc.ripgrep', ripgrep],
     ['etc.zoomPane', zoomPane],
   ];

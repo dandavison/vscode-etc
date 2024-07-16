@@ -39,6 +39,10 @@
         "title": "Emacs Magit Status"
       },
       {
+        "command": "etc.magitShow",
+        "title": "Emacs Magit Show"
+      },
+      {
         "command": "etc.ripgrep",
         "title": "Ripgrep"
       },
