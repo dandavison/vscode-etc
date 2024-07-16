@@ -14,7 +14,7 @@ export async function gitBlame() {
       editor.selection.end.line,
     ];
     if (end > start) {
-      cmd += `-L ${start},${end} `;
+      cmd += `-L ${start + 1},${end + 1} `;
     }
     cmd += path;
     const terminal =
