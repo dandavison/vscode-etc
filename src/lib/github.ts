@@ -9,9 +9,17 @@ export function getRepoName(url: string): string {
   return match.groups!.name;
 }
 
-export function makeUrl(path: string, line: number): string {
+export function makeUrl(
+  path: string,
+  startLine: number,
+  endLine?: number
+): string {
   const fileData = git.getGitRepoFile(path);
-  return `https://github.com/${getRepoName(fileData.repo.url)}/blob/${
-    fileData.repo.defaultBranch
-  }/${fileData.path}#L${line}`;
+  let url = `https://github.com/${getRepoName(fileData.repo.url)}/blob/${
+    fileData.repo.branch
+  }/${fileData.path}#L${startLine}`;
+  if (endLine) {
+    url += `-L${endLine}`;
+  }
+  return url;
 }

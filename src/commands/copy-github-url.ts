@@ -12,11 +12,13 @@ export async function copyGithubMarkdownUrl() {
 
 type Coords = {
   path: string;
-  line: number;
+  startLine: number;
+  endLine?: number;
   text: string;
   selection: string;
 };
 
+// 1-based coordinates
 function getCoords(): Coords | null {
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
@@ -26,9 +28,12 @@ function getCoords(): Coords | null {
   const line = editor.selection.active.line;
   const text = editor.document.lineAt(line).text;
   const selection = editor.document.getText(editor.selection);
+  const startLine = editor.selection.start.line + 1;
+  const endLine = editor.selection.end.line + 1;
   return {
     path,
-    line,
+    startLine,
+    endLine: endLine > startLine ? endLine : undefined,
     text,
     selection,
   };
@@ -43,7 +48,7 @@ function _copyGitHubUrl({ markdown }: { markdown: boolean }) {
     return;
   }
   try {
-    let link = github.makeUrl(coords.path, coords.line + 1);
+    let link = github.makeUrl(coords.path, coords.startLine, coords.endLine);
     if (markdown) {
       const text = coords.selection || coords.text.trim();
       link = `[\`${text}\`](${link})`;
@@ -57,7 +62,7 @@ function _copyGitHubUrl({ markdown }: { markdown: boolean }) {
     });
   } catch (error) {
     vscode.window.showInformationMessage(
-      `Could not determine GitHub URL for ${coords.path}:${coords.line}: ${error}`
+      `Could not determine GitHub URL for ${coords.path}:${coords.startLine}: ${error}`
     );
   }
 }
