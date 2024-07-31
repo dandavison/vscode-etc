@@ -6,6 +6,7 @@ import { gitBlame } from './commands/git-blame';
 import { zoomPane } from './commands/zoom-pane';
 import { showExtensionVersion } from './commands/show-extension-version';
 import { ripgrep } from './commands/ripgrep';
+import * as server from './api/server';
 
 export function activate(context: vscode.ExtensionContext) {
   const catalog: [string, () => Promise<void>][] = [
@@ -23,6 +24,10 @@ export function activate(context: vscode.ExtensionContext) {
       vscode.commands.registerCommand(command, handler)
     );
   }
+
+  console.log('hello');
+
+  server.activate(context);
 
   showExtensionVersion();
 }

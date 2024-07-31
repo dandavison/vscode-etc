@@ -6,7 +6,7 @@ clean:
 	@rm *.vsix 2>/dev/null || true
 
 build:
-	vsce package
+	yes | vsce package
 
 uninstall:
 	code --uninstall-extension dandavison.vscode-etc || true
