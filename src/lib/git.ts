@@ -40,7 +40,9 @@ function getGitRepo(root: string): IGitRepo {
     throw new Error(`Could not determine HEAD commit at ${root}`);
   }
 
-  const branch = git('-C', root, 'branch', '--show-current');
+  const branch =
+    git('-C', root, 'branch', '--show-current') ||
+    git('-C', root, 'rev-parse', '--short', 'HEAD');
   if (!branch) {
     throw new Error(`Could not determine branch at ${root}`);
   }
