@@ -7,6 +7,7 @@ import { zoomPane } from './commands/zoom-pane';
 import { showExtensionVersion } from './commands/show-extension-version';
 import { ripgrep } from './commands/ripgrep';
 import * as server from './api/server';
+import { log } from './log';
 
 export function activate(context: vscode.ExtensionContext) {
   const catalog: [string, () => Promise<void>][] = [
@@ -25,11 +26,10 @@ export function activate(context: vscode.ExtensionContext) {
     );
   }
 
-  console.log('hello');
-
   server.activate(context);
 
   showExtensionVersion();
+  log('Etc activated');
 }
 
 export function deactivate() {}
