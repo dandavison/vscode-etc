@@ -6,6 +6,7 @@ import { gitBlame } from './commands/git-blame';
 import { zoomPane } from './commands/zoom-pane';
 import { showExtensionVersion } from './commands/show-extension-version';
 import { ripgrep } from './commands/ripgrep';
+import { toggleCursorCpp } from './commands/cursor-cpp-toggle';
 import * as server from './api/server';
 import { log } from './log';
 
@@ -19,6 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
     ['etc.magitShow', magitShow],
     ['etc.ripgrep', ripgrep],
     ['etc.zoomPane', zoomPane],
+    ['etc.toggleCursorCpp', toggleCursorCpp],
   ];
   for (const [command, handler] of catalog) {
     context.subscriptions.push(
