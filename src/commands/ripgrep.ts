@@ -6,9 +6,10 @@ export async function ripgrep() {
     return;
   }
   const pattern = editor.document.getText(editor.selection);
-  let cmd = `rgd ${pattern}`;
+  let cmd = `rn ${pattern}`;
   const terminal =
     vscode.window.activeTerminal || vscode.window.createTerminal();
   terminal.show();
-  terminal.sendText(cmd, true);
+  vscode.commands.executeCommand('workbench.action.toggleMaximizedPanel');
+  terminal.sendText(cmd, Boolean(pattern));
 }
