@@ -7,7 +7,7 @@
     "url": "https://github.com/dandavison/vscode-etc",
     "type": "git"
   },
-  "version": "0.0.8",
+  "version": "0.0.9",
   "engines": {
     "vscode": "^1.71.0"
   },
@@ -55,6 +55,10 @@
       {
         "command": "etc.toggleCursorCpp",
         "title": "Toggle Cursor Tab"
+      },
+      {
+        "command": "etc.openViaWormhole",
+        "title": "Open via Wormhole"
       }
     ]
   },
