@@ -7,7 +7,7 @@ class Logger {
 
   public static getInstance(): vscode.OutputChannel {
     if (!Logger.instance) {
-      Logger.instance = vscode.window.createOutputChannel('Etc');
+      Logger.instance = vscode.window.createOutputChannel('vscode-etc');
     }
     return Logger.instance;
   }
