@@ -1,12 +1,40 @@
 import * as vscode from 'vscode';
 import * as http from 'http';
+import { log } from '../log';
+import * as fs from 'fs';
+
+const pathTransformationRules: [RegExp, string][] = [
+  // E.g. /Users/dan/go/pkg/mod/github.com/nexus-rpc/sdk-go@v0.2.0/nexus/operation.go:114
+  [
+      /\/Users\/dan\/go\/pkg\/mod\/github\.com\/nexus-rpc\/sdk-go@v[0-9a-f.-]+\/(.*)/,
+      '/Users/dan/src/temporalio/nexus-sdk-go/$1',
+  ],
+  // E.g. /Users/dan/go/pkg/mod/go.temporal.io/sdk@v1.32.2-0.20250211003938-22ebdc0dfafb/temporalnexus/operation.go:156
+  [
+      /\/Users\/dan\/go\/pkg\/mod\/go\.temporal\.io\/sdk@v[0-9a-f.-]+\/(.*)/,
+      '/Users/dan/src/temporalio/sdk-go/$1',
+  ],
+  // E.g. /Users/dan/.local/share/uv/python/cpython-3.9.21-macos-aarch64-none/lib/python3.9/asyncio/events.py:98
+  [
+      /\/Users\/dan\/\.local\/share\/uv\/python\/cpython-[^/]+\/lib\/python[0-9.]+\/(.*)/,
+      '/Users/dan/tmp/3p/cpython/Lib/$1',
+  ],
+];
 
 export async function openViaWormhole(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
         return;
     }
-    const filePath = editor.document.uri.fsPath;
+    const filePath = transformFilePath(editor.document.uri.fsPath);
+    if (!filePath) {
+        log(`No transformation found for ${editor.document.uri.fsPath}`);
+        return;
+    } else if (!fs.existsSync(filePath)) {
+      log(`File does not exist: ${filePath}`);
+      return;
+    }
+
     const line = editor.selection.active.line + 1;
 
     await vscode.window.showTextDocument(editor.document, editor.viewColumn)
@@ -26,6 +54,19 @@ export async function openViaWormhole(): Promise<void> {
             reject(error);
         });
     });
+}
+
+function transformFilePath(filePath: string): string | null {
+    for (const [pattern, replacement] of pathTransformationRules) {
+        log(`Checking ${filePath} against ${pattern}`);
+        if (filePath.match(pattern)) {
+            const transformed = filePath.replace(pattern, replacement);
+            log(`Transformed ${filePath} to ${transformed}`);
+            return transformed;
+        }
+    }
+
+    return filePath;
 }
 
 export async function onDidOpenTextDocument(document: vscode.TextDocument) {
