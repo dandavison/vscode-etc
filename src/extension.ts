@@ -9,7 +9,7 @@ import { ripgrep } from './commands/ripgrep';
 import { toggleCursorCpp } from './commands/cursor-cpp-toggle';
 import * as server from './api/server';
 import { log } from './log';
-import { openViaWormhole } from './commands/open-via-wormhole';
+import * as wormhole from './commands/wormhole';
 
 export function activate(context: vscode.ExtensionContext) {
   const catalog: [string, () => Promise<void>][] = [
@@ -21,7 +21,7 @@ export function activate(context: vscode.ExtensionContext) {
     ['etc.magitShow', magitShow],
     ['etc.ripgrep', ripgrep],
     ['etc.zoomPane', zoomPane],
-    ['etc.openViaWormhole', openViaWormhole],
+    ['etc.openViaWormhole', wormhole.openViaWormhole],
     ['etc.toggleCursorCpp', toggleCursorCpp],
   ];
   for (const [command, handler] of catalog) {
@@ -30,31 +30,8 @@ export function activate(context: vscode.ExtensionContext) {
     );
   }
 
-  // Register file open handler
   context.subscriptions.push(
-    vscode.workspace.onDidOpenTextDocument(async (document) => {
-      // Skip non-file schemes (like git:, untitled:, etc.)
-      if (document.uri.scheme !== 'file') {
-        return;
-      }
-
-      const filePath = document.uri.fsPath;
-      const workspaceFolders = vscode.workspace.workspaceFolders;
-
-      const isOutsideWorkspace = !workspaceFolders?.some(folder =>
-        filePath.startsWith(folder.uri.fsPath)
-      );
-
-      if (isOutsideWorkspace) {
-        // Use a slight delay to ensure the editor is fully opened
-        setTimeout(async () => {
-          const editor = vscode.window.activeTextEditor;
-          if (editor && editor.document === document) {
-            await openViaWormhole();
-          }
-        }, 100);
-      }
-    })
+    vscode.workspace.onDidOpenTextDocument(wormhole.onDidOpenTextDocument)
   );
 
   server.activate(context);
