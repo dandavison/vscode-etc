@@ -7,7 +7,6 @@ import { zoomPane } from './commands/zoom-pane';
 import { showExtensionVersion } from './commands/show-extension-version';
 import { ripgrep } from './commands/ripgrep';
 import { toggleCursorCpp } from './commands/cursor-cpp-toggle';
-import * as server from './api/server';
 import { log } from './log';
 import * as wormhole from './commands/wormhole';
 
@@ -33,8 +32,6 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.workspace.onDidOpenTextDocument(wormhole.onDidOpenTextDocument)
   );
-
-  server.activate(context);
 
   showExtensionVersion();
   log('Etc activated');
