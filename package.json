@@ -7,7 +7,7 @@
     "url": "https://github.com/dandavison/vscode-etc",
     "type": "git"
   },
-  "version": "0.0.10",
+  "version": "0.0.11",
   "engines": {
     "vscode": "^1.71.0"
   },

@@ -14,11 +14,11 @@ const pathTransformationRules: [RegExp, string][] = [
       /\/Users\/dan\/go\/pkg\/mod\/go\.temporal\.io\/sdk@v[0-9a-f.-]+\/(.*)/,
       '/Users/dan/src/temporalio/sdk-go/$1',
   ],
-  // E.g. /Users/dan/.local/share/uv/python/cpython-3.9.21-macos-aarch64-none/lib/python3.9/asyncio/events.py:98
-  [
-      /\/Users\/dan\/\.local\/share\/uv\/python\/cpython-[^/]+\/lib\/python[0-9.]+\/(.*)/,
-      '/Users/dan/tmp/3p/cpython/Lib/$1',
-  ],
+  // // E.g. /Users/dan/.local/share/uv/python/cpython-3.9.21-macos-aarch64-none/lib/python3.9/asyncio/events.py:98
+  // [
+  //     /\/Users\/dan\/\.local\/share\/uv\/python\/cpython-[^/]+\/lib\/python[0-9.]+\/(.*)/,
+  //     '/Users/dan/tmp/3p/cpython/Lib/$1',
+  // ],
 ];
 
 export async function openViaWormhole(): Promise<void> {
@@ -26,7 +26,7 @@ export async function openViaWormhole(): Promise<void> {
     if (!editor) {
         return;
     }
-    const filePath = transformFilePath(editor.document.uri.fsPath);
+    const filePath = getWormholeFilePath(editor.document.uri.fsPath);
     if (!filePath) {
         log(`No transformation found for ${editor.document.uri.fsPath}`);
         return;
@@ -56,7 +56,7 @@ export async function openViaWormhole(): Promise<void> {
     });
 }
 
-function transformFilePath(filePath: string): string | null {
+function getWormholeFilePath(filePath: string): string | null {
     for (const [pattern, replacement] of pathTransformationRules) {
         log(`Checking ${filePath} against ${pattern}`);
         if (filePath.match(pattern)) {
@@ -65,8 +65,11 @@ function transformFilePath(filePath: string): string | null {
             return transformed;
         }
     }
-
-    return filePath;
+    // Outside the workspace but a local repo; e.g. a Python dependency installed in editable mode.
+    if (filePath.match(/^\/Users\/dan\/src\//)) {
+        return filePath;
+    }
+    return null;
 }
 
 export async function onDidOpenTextDocument(document: vscode.TextDocument) {
@@ -83,12 +86,9 @@ export async function onDidOpenTextDocument(document: vscode.TextDocument) {
     );
 
     if (isOutsideWorkspace) {
-      // Use a slight delay to ensure the editor is fully opened
-      setTimeout(async () => {
-        const editor = vscode.window.activeTextEditor;
-        if (editor && editor.document === document) {
-          await openViaWormhole();
-        }
-      }, 100);
-    }
+      const editor = vscode.window.activeTextEditor;
+      if (editor && editor.document === document) {
+        await openViaWormhole();
+      }
+  }
   }
