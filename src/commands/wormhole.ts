@@ -66,7 +66,7 @@ function getWormholeFilePath(filePath: string): string | null {
         }
     }
     // Outside the workspace but a local repo; e.g. a Python dependency installed in editable mode.
-    if (filePath.match(/^\/Users\/dan\/src\//)) {
+    if (filePath.startsWith('/Users/dan/src/')) {
         return filePath;
     }
     return null;
@@ -86,9 +86,12 @@ export async function onDidOpenTextDocument(document: vscode.TextDocument) {
     );
 
     if (isOutsideWorkspace) {
-      const editor = vscode.window.activeTextEditor;
-      if (editor && editor.document === document) {
-        await openViaWormhole();
-      }
-  }
-  }
+      // Use a slight delay to ensure the editor is fully opened
+      setTimeout(async () => {
+        const editor = vscode.window.activeTextEditor;
+        if (editor && editor.document === document) {
+          await openViaWormhole();
+        }
+      }, 500);
+    }
+}
