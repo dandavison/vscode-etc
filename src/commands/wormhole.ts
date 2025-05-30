@@ -81,7 +81,7 @@ export async function onDidOpenTextDocument(document: vscode.TextDocument) {
     );
 
     log(`${document.uri.fsPath} isOutsideWorkspace: ${isOutsideWorkspace}`);
-    if (isOutsideWorkspace) {
+    if (false && isOutsideWorkspace) {
       // Use a slight delay to ensure the editor is fully opened
       setTimeout(async () => {
         const editor = vscode.window.activeTextEditor;
