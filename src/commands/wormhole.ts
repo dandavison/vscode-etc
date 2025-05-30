@@ -73,18 +73,14 @@ function getWormholeFilePath(filePath: string): string | null {
 }
 
 export async function onDidOpenTextDocument(document: vscode.TextDocument) {
-    // Skip non-file schemes (like git:, untitled:, etc.)
     if (document.uri.scheme !== 'file') {
-      return;
+        return;
     }
-
-    const filePath = document.uri.fsPath;
-    const workspaceFolders = vscode.workspace.workspaceFolders;
-
-    const isOutsideWorkspace = !workspaceFolders?.some(folder =>
-      filePath.startsWith(folder.uri.fsPath)
+    const isOutsideWorkspace = !vscode.workspace.workspaceFolders?.some(folder =>
+        document.uri.fsPath.startsWith(folder.uri.fsPath)
     );
 
+    log(`${document.uri.fsPath} isOutsideWorkspace: ${isOutsideWorkspace}`);
     if (isOutsideWorkspace) {
       // Use a slight delay to ensure the editor is fully opened
       setTimeout(async () => {
