@@ -81,7 +81,8 @@ export async function onDidOpenTextDocument(document: vscode.TextDocument) {
     );
 
     log(`${document.uri.fsPath} isOutsideWorkspace: ${isOutsideWorkspace}`);
-    if (false && isOutsideWorkspace) {
+    const autoOpen = vscode.workspace.getConfiguration('vscode-etc.wormhole').get('openOutsideWorkspace');
+    if (autoOpen && isOutsideWorkspace) {
       // Use a slight delay to ensure the editor is fully opened
       setTimeout(async () => {
         const editor = vscode.window.activeTextEditor;

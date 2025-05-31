@@ -7,7 +7,7 @@
     "url": "https://github.com/dandavison/vscode-etc",
     "type": "git"
   },
-  "version": "0.0.13",
+  "version": "0.0.14",
   "engines": {
     "vscode": "^1.71.0"
   },
@@ -60,7 +60,17 @@
         "command": "etc.openViaWormhole",
         "title": "Open via Wormhole"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "VSCode Etc",
+      "properties": {
+        "vscode-etc.wormhole.openOutsideWorkspace": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically open files outside the workspace via wormhole when a file is opened."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
