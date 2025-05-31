@@ -26,9 +26,16 @@ export async function openViaWormhole(): Promise<void> {
     if (!editor) {
         return;
     }
-    const filePath = getWormholeFilePath(editor.document.uri.fsPath);
+    let canonicalizedPath = editor.document.uri.fsPath;
+    try {
+      canonicalizedPath = fs.realpathSync(canonicalizedPath);
+    } catch (error) {
+      log(`Failed to resolve symlinks for ${canonicalizedPath}: ${error}`);
+    }
+
+    const filePath = getWormholeFilePath(canonicalizedPath);
     if (!filePath) {
-        log(`No transformation found for ${editor.document.uri.fsPath}`);
+        log(`No transformation found for ${canonicalizedPath}`);
         return;
     } else if (!fs.existsSync(filePath)) {
       log(`File does not exist: ${filePath}`);
@@ -76,11 +83,19 @@ export async function onDidOpenTextDocument(document: vscode.TextDocument) {
     if (document.uri.scheme !== 'file') {
         return;
     }
+
+    let canonicalizedPath = document.uri.fsPath;
+    try {
+      canonicalizedPath = fs.realpathSync(canonicalizedPath);
+    } catch (error) {
+      log(`Failed to resolve symlinks for ${canonicalizedPath}: ${error}`);
+    }
+
     const isOutsideWorkspace = !vscode.workspace.workspaceFolders?.some(folder =>
-        document.uri.fsPath.startsWith(folder.uri.fsPath)
+        canonicalizedPath.startsWith(folder.uri.fsPath)
     );
 
-    log(`${document.uri.fsPath} isOutsideWorkspace: ${isOutsideWorkspace}`);
+    log(`${document.uri.fsPath} => ${canonicalizedPath} isOutsideWorkspace: ${isOutsideWorkspace}`);
     const autoOpen = vscode.workspace.getConfiguration('vscode-etc.wormhole').get('openOutsideWorkspace');
     if (autoOpen && isOutsideWorkspace) {
       // Use a slight delay to ensure the editor is fully opened

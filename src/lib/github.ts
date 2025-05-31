@@ -1,5 +1,13 @@
 import * as git from './git';
 
+const urlTransformationRules: [RegExp, string][] = [
+  // E.g. https://github.com/bergundy/nexus-sdk-typescript/blob/initial-version/src/handler.ts#L200
+  [
+    /https:\/\/github\.com\/bergundy\/(.*)/,
+    'https://github.com/temporalio/$1',
+  ],
+];
+
 export function getRepoName(url: string): string {
   const regex = /^[^@]+@github.com:(?<name>[^.]+)(\.git)?$/;
   const match = regex.exec(url);
@@ -21,5 +29,8 @@ export function makeUrl(
   if (endLine) {
     url += `-L${endLine}`;
   }
+  url = urlTransformationRules.reduce((url, [regex, replacement]) => {
+    return url.replace(regex, replacement);
+  }, url);
   return url;
 }

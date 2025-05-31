@@ -49,13 +49,14 @@ function _copyGitHubUrl({ markdown }: { markdown: boolean }) {
   }
   try {
     let link = github.makeUrl(coords.path, coords.startLine, coords.endLine);
+    const msg = link
     if (markdown) {
       const text = coords.selection || coords.text.trim();
       link = `[\`${text}\`](${link})`;
     }
-    log(`Created link: ${link}`);
+    log(`Created link: ${msg}`);
     vscode.env.clipboard.writeText(link).then(() => {
-      let disposable = vscode.window.setStatusBarMessage('Copied GitHub URL');
+      let disposable = vscode.window.setStatusBarMessage(msg);
       setTimeout(() => {
         disposable.dispose();
       }, 1000);
@@ -66,3 +67,4 @@ function _copyGitHubUrl({ markdown }: { markdown: boolean }) {
     );
   }
 }
+
