@@ -9,6 +9,7 @@ import { ripgrep } from './commands/ripgrep';
 import { toggleCursorCpp } from './commands/cursor-cpp-toggle';
 import { log } from './log';
 import * as wormhole from './commands/wormhole';
+import { togglePythonTypeCheckingMode } from './commands/toggle-python-type-checking';
 
 export function activate(context: vscode.ExtensionContext) {
   const catalog: [string, () => Promise<void>][] = [
@@ -31,6 +32,9 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.workspace.onDidOpenTextDocument(wormhole.onDidOpenTextDocument)
+  );
+  context.subscriptions.push(
+    vscode.commands.registerCommand('vscode-etc.togglePythonTypeCheckingMode', togglePythonTypeCheckingMode)
   );
 
   showExtensionVersion();

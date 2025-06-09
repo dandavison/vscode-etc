@@ -59,6 +59,10 @@
       {
         "command": "etc.openViaWormhole",
         "title": "Open via Wormhole"
+      },
+      {
+        "command": "vscode-etc.togglePythonTypeCheckingMode",
+        "title": "Python: Toggle Type Checking Mode"
       }
     ],
     "configuration": {
