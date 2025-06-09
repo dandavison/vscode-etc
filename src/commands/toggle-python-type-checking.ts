@@ -7,6 +7,4 @@ export async function togglePythonTypeCheckingMode(): Promise<void> {
     const newMode = currentMode === 'basic' ? 'strict' : 'basic';
 
     await config.update('typeCheckingMode', newMode, vscode.ConfigurationTarget.Global);
-
-    vscode.window.setStatusBarMessage(`Python Type Checking: ${newMode}`, 2000);
 }
