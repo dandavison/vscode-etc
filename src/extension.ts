@@ -11,6 +11,7 @@ import { log } from './log';
 import * as wormhole from './commands/wormhole';
 import { togglePythonTypeCheckingMode } from './commands/toggle-python-type-checking';
 import { createPythonTypeCheckingStatus, updateStatus } from './commands/python-type-checking-status';
+import { createFilePathStatus, updateFilePathStatus } from './commands/file-path-status';
 
 export function activate(context: vscode.ExtensionContext) {
   const catalog: [string, () => Promise<void>][] = [
@@ -44,6 +45,12 @@ export function activate(context: vscode.ExtensionContext) {
       updateStatus();
     }
   }));
+
+  // File path status bar
+  createFilePathStatus();
+  context.subscriptions.push(
+    vscode.window.onDidChangeActiveTextEditor(() => updateFilePathStatus())
+  );
 
   showExtensionVersion();
   log('Etc activated');
