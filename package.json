@@ -22,59 +22,59 @@
     "commands": [
       {
         "command": "etc.copyGithubUrl",
-        "title": "Copy GitHub URL"
+        "title": "Etc: Copy GitHub URL"
       },
       {
         "command": "etc.copyGithubMarkdownUrl",
-        "title": "Copy GitHub markdown URL"
+        "title": "Etc: Copy GitHub Markdown URL"
       },
       {
         "command": "etc.gitBlame",
-        "title": "Git Blame"
+        "title": "Etc: Git Blame"
       },
       {
         "command": "etc.magitStatus",
-        "title": "Emacs Magit Status"
+        "title": "Etc: Magit Status"
       },
       {
         "command": "etc.magitShow",
-        "title": "Emacs Magit Show"
+        "title": "Etc: Magit Show"
       },
       {
         "command": "etc.ripgrep",
-        "title": "Ripgrep"
+        "title": "Etc: Ripgrep"
       },
       {
         "command": "etc.zoomPane",
-        "title": "Zoom Pane"
+        "title": "Etc: Zoom Pane"
       },
       {
         "command": "etc.openViaWormhole",
-        "title": "Open via Wormhole"
+        "title": "Etc: Open via Wormhole"
       },
       {
         "command": "vscode-etc.togglePythonTypeCheckingMode",
-        "title": "Python: Toggle Type Checking Mode"
+        "title": "Etc: Toggle Python Type Checking Mode"
       },
       {
         "command": "etc.saveWindowConfiguration",
-        "title": "Save Window Configuration to Register"
+        "title": "Etc: Save Window Configuration to Register"
       },
       {
         "command": "etc.restoreWindowConfiguration",
-        "title": "Restore Window Configuration from Register"
+        "title": "Etc: Restore Window Configuration from Register"
       },
       {
         "command": "etc.quickSaveWindowConfiguration",
-        "title": "Quick Save Window Configuration (Register 1)"
+        "title": "Etc: Quick Save Window Configuration (Register 1)"
       },
       {
         "command": "etc.quickRestoreWindowConfiguration",
-        "title": "Quick Restore Window Configuration (Register 1)"
+        "title": "Etc: Quick Restore Window Configuration (Register 1)"
       },
       {
         "command": "etc.listWindowConfigurationRegisters",
-        "title": "List Window Configuration Registers"
+        "title": "Etc: List Window Configuration Registers"
       }
     ],
     "configuration": {
