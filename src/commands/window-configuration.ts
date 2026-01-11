@@ -140,11 +140,13 @@ async function captureCurrentConfiguration(): Promise<WindowConfiguration | null
       const uri = getTabUri(activeTab);
       if (uri) {
         // Try to get cursor position from the active editor
+        // Match by both URI and viewColumn to handle same file in multiple splits
         let line: number | undefined;
         let column: number | undefined;
 
         const editor = vscode.window.visibleTextEditors.find(
-          e => e.document.uri.toString() === uri.toString()
+          e => e.document.uri.toString() === uri.toString() &&
+               e.viewColumn === group.viewColumn
         );
         if (editor) {
           line = editor.selection.active.line;
