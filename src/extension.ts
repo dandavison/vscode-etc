@@ -49,7 +49,8 @@ export function activate(context: vscode.ExtensionContext) {
   // File path status bar
   createFilePathStatus();
   context.subscriptions.push(
-    vscode.window.onDidChangeActiveTextEditor(() => updateFilePathStatus())
+    vscode.window.onDidChangeActiveTextEditor(() => updateFilePathStatus()),
+    vscode.window.onDidChangeTextEditorSelection(() => updateFilePathStatus())
   );
 
   showExtensionVersion();

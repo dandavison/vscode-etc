@@ -11,7 +11,7 @@ export function createFilePathStatus() {
   statusBarItem.show();
 }
 
-export function updateFilePathStatus() {
+export async function updateFilePathStatus() {
   if (!statusBarItem) {
     return;
   }
@@ -22,18 +22,57 @@ export function updateFilePathStatus() {
     return;
   }
 
-  const filePath = editor.document.uri.fsPath;
   const workspaceFolder = vscode.workspace.getWorkspaceFolder(editor.document.uri);
+  let text: string;
 
   if (workspaceFolder) {
-    const relativePath = vscode.workspace.asRelativePath(editor.document.uri, false);
-    statusBarItem.text = relativePath;
+    text = vscode.workspace.asRelativePath(editor.document.uri, false);
   } else {
-    // File is outside workspace - show full path
-    statusBarItem.text = filePath;
+    text = editor.document.uri.fsPath;
   }
 
+  // Get enclosing symbol(s)
+  const symbolChain = await getEnclosingSymbols(editor.document, editor.selection.active);
+  if (symbolChain.length > 0) {
+    text += ' › ' + symbolChain.join(' › ');
+  }
+
+  statusBarItem.text = text;
   statusBarItem.show();
 }
 
+async function getEnclosingSymbols(
+  document: vscode.TextDocument,
+  position: vscode.Position
+): Promise<string[]> {
+  const symbols = await vscode.commands.executeCommand<vscode.DocumentSymbol[]>(
+    'vscode.executeDocumentSymbolProvider',
+    document.uri
+  );
 
+  if (!symbols || symbols.length === 0) {
+    return [];
+  }
+
+  const chain: string[] = [];
+  findEnclosingSymbols(symbols, position, chain);
+  return chain;
+}
+
+function findEnclosingSymbols(
+  symbols: vscode.DocumentSymbol[],
+  position: vscode.Position,
+  chain: string[]
+): boolean {
+  for (const symbol of symbols) {
+    if (symbol.range.contains(position)) {
+      chain.push(symbol.name);
+      // Recurse into children to find more specific symbols
+      if (symbol.children && symbol.children.length > 0) {
+        findEnclosingSymbols(symbol.children, position, chain);
+      }
+      return true;
+    }
+  }
+  return false;
+}
