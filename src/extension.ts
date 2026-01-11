@@ -12,6 +12,7 @@ import * as wormhole from './commands/wormhole';
 import { togglePythonTypeCheckingMode } from './commands/toggle-python-type-checking';
 import { createPythonTypeCheckingStatus, updateStatus } from './commands/python-type-checking-status';
 import { createFilePathStatus, updateFilePathStatus } from './commands/file-path-status';
+import * as windowConfig from './commands/window-configuration';
 
 export function activate(context: vscode.ExtensionContext) {
   const catalog: [string, () => Promise<void>][] = [
@@ -25,6 +26,11 @@ export function activate(context: vscode.ExtensionContext) {
     ['etc.zoomPane', zoomPane],
     ['etc.openViaWormhole', wormhole.openViaWormhole],
     ['etc.toggleCursorCpp', toggleCursorCpp],
+    ['etc.saveWindowConfiguration', windowConfig.saveWindowConfiguration],
+    ['etc.restoreWindowConfiguration', windowConfig.restoreWindowConfiguration],
+    ['etc.quickSaveWindowConfiguration', windowConfig.quickSaveWindowConfiguration],
+    ['etc.quickRestoreWindowConfiguration', windowConfig.quickRestoreWindowConfiguration],
+    ['etc.listWindowConfigurationRegisters', windowConfig.listWindowConfigurationRegisters],
   ];
   for (const [command, handler] of catalog) {
     context.subscriptions.push(
