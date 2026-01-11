@@ -56,6 +56,29 @@
         "command": "vscode-etc.togglePythonTypeCheckingMode",
         "title": "Etc: Toggle Python Type Checking Mode"
       },
+      {
+        "command": "etc.saveWindowConfiguration",
+        "title": "Etc: Save Window Configuration to Register"
+      },
+      {
+        "command": "etc.saveWindowConfiguration1",
+        "title": "Etc: Save Window Configuration (Register 1)"
+      },
+      {
+        "command": "etc.restoreWindowConfiguration1",
+        "title": "Etc: Restore Window Configuration (Register 1)"
+      },
+      {
+        "command": "etc.saveWindowConfiguration2",
+        "title": "Etc: Save Window Configuration (Register 2)"
+      },
+      {
+        "command": "etc.restoreWindowConfiguration2",
+        "title": "Etc: Restore Window Configuration (Register 2)"
+      },
+      {
+        "command": "etc.listWindowConfigurationRegisters",
+        "title": "Etc: List Window Configurations"
       }
     ],
     "configuration": {
