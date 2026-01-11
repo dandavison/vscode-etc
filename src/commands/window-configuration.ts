@@ -39,24 +39,78 @@ interface GroupLayoutArgument {
 const registers = new Map<string, WindowConfiguration>();
 
 /**
- * Quick save to register 1 (most common use case)
+ * Save the current window configuration to a register.
+ * Prompts the user for a register name.
  */
-export async function quickSaveWindowConfiguration(): Promise<void> {
+export async function saveWindowConfiguration(): Promise<void> {
+  const register = await vscode.window.showInputBox({
+    prompt: 'Save window configuration to register',
+    placeHolder: 'Enter register (0-9, a-z)',
+    validateInput: (value) => {
+      if (value.length !== 1) {
+        return 'Register must be a single character';
+      }
+      if (!/^[0-9a-z]$/i.test(value)) {
+        return 'Register must be 0-9 or a-z';
+      }
+      return undefined;
+    },
+  });
+  if (register === undefined) {
+    return;
+  }
+
+  const config = captureCurrentConfiguration();
+  if (config) {
+    registers.set(register.toLowerCase(), config);
+    const files = config.visibleEditors.map(e => e.uri.split('/').pop()).join(' | ');
+    vscode.window.showInformationMessage(`Saved to register '${register}': ${files}`);
+  }
+}
+
+/**
+ * Save to register 1
+ */
+export async function saveWindowConfiguration1(): Promise<void> {
   const config = captureCurrentConfiguration();
   if (config) {
     registers.set('1', config);
-    const files = config.visibleEditors.map(e => e.uri.split('/').pop()).join(', ');
+    const files = config.visibleEditors.map(e => e.uri.split('/').pop()).join(' | ');
     vscode.window.showInformationMessage(`Saved to register '1': ${files}`);
   }
 }
 
 /**
- * Quick restore from register 1
+ * Restore from register 1
  */
-export async function quickRestoreWindowConfiguration(): Promise<void> {
+export async function restoreWindowConfiguration1(): Promise<void> {
   const config = registers.get('1');
   if (!config) {
     vscode.window.showWarningMessage(`No window configuration in register '1'`);
+    return;
+  }
+  await applyConfiguration(config);
+}
+
+/**
+ * Save to register 2
+ */
+export async function saveWindowConfiguration2(): Promise<void> {
+  const config = captureCurrentConfiguration();
+  if (config) {
+    registers.set('2', config);
+    const files = config.visibleEditors.map(e => e.uri.split('/').pop()).join(' | ');
+    vscode.window.showInformationMessage(`Saved to register '2': ${files}`);
+  }
+}
+
+/**
+ * Restore from register 2
+ */
+export async function restoreWindowConfiguration2(): Promise<void> {
+  const config = registers.get('2');
+  if (!config) {
+    vscode.window.showWarningMessage(`No window configuration in register '2'`);
     return;
   }
   await applyConfiguration(config);

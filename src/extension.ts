@@ -22,8 +22,11 @@ export function activate(context: vscode.ExtensionContext) {
     ['etc.ripgrep', ripgrep],
     ['etc.zoomPane', zoomPane],
     ['etc.openViaWormhole', wormhole.openViaWormhole],
-    ['etc.quickSaveWindowConfiguration', windowConfig.quickSaveWindowConfiguration],
-    ['etc.quickRestoreWindowConfiguration', windowConfig.quickRestoreWindowConfiguration],
+    ['etc.saveWindowConfiguration', windowConfig.saveWindowConfiguration],
+    ['etc.saveWindowConfiguration1', windowConfig.saveWindowConfiguration1],
+    ['etc.restoreWindowConfiguration1', windowConfig.restoreWindowConfiguration1],
+    ['etc.saveWindowConfiguration2', windowConfig.saveWindowConfiguration2],
+    ['etc.restoreWindowConfiguration2', windowConfig.restoreWindowConfiguration2],
     ['etc.listWindowConfigurationRegisters', windowConfig.listWindowConfigurationRegisters],
   ];
   for (const [command, handler] of catalog) {
