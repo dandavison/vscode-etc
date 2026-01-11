@@ -224,8 +224,24 @@ async function applyConfiguration(config: WindowConfiguration): Promise<void> {
   }
 
   // Focus the originally active group
-  const targetViewColumn = config.activeGroupIndex + 1;
-  await vscode.commands.executeCommand('workbench.action.focusEditorGroup', targetViewColumn);
+  await focusEditorGroup(config.activeGroupIndex + 1);
+}
+
+async function focusEditorGroup(groupNumber: number): Promise<void> {
+  const focusCommands: Record<number, string> = {
+    1: 'workbench.action.focusFirstEditorGroup',
+    2: 'workbench.action.focusSecondEditorGroup',
+    3: 'workbench.action.focusThirdEditorGroup',
+    4: 'workbench.action.focusFourthEditorGroup',
+    5: 'workbench.action.focusFifthEditorGroup',
+    6: 'workbench.action.focusSixthEditorGroup',
+    7: 'workbench.action.focusSeventhEditorGroup',
+    8: 'workbench.action.focusEighthEditorGroup',
+  };
+  const command = focusCommands[groupNumber];
+  if (command) {
+    await vscode.commands.executeCommand(command);
+  }
 }
 
 /**
