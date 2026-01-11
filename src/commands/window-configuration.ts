@@ -60,7 +60,7 @@ export async function saveWindowConfiguration(): Promise<void> {
     return;
   }
 
-  const config = captureCurrentConfiguration();
+  const config = await captureCurrentConfiguration();
   if (config) {
     registers.set(register.toLowerCase(), config);
     const files = config.visibleEditors.map(e => e.uri.split('/').pop()).join(' | ');
@@ -72,7 +72,7 @@ export async function saveWindowConfiguration(): Promise<void> {
  * Save to register 1
  */
 export async function saveWindowConfiguration1(): Promise<void> {
-  const config = captureCurrentConfiguration();
+  const config = await captureCurrentConfiguration();
   if (config) {
     registers.set('1', config);
     const files = config.visibleEditors.map(e => e.uri.split('/').pop()).join(' | ');
@@ -96,7 +96,7 @@ export async function restoreWindowConfiguration1(): Promise<void> {
  * Save to register 2
  */
 export async function saveWindowConfiguration2(): Promise<void> {
-  const config = captureCurrentConfiguration();
+  const config = await captureCurrentConfiguration();
   if (config) {
     registers.set('2', config);
     const files = config.visibleEditors.map(e => e.uri.split('/').pop()).join(' | ');
@@ -116,14 +116,17 @@ export async function restoreWindowConfiguration2(): Promise<void> {
   await applyConfiguration(config);
 }
 
-function captureCurrentConfiguration(): WindowConfiguration | null {
+async function captureCurrentConfiguration(): Promise<WindowConfiguration | null> {
+  // Get the actual layout structure including sizes
+  const layout = await vscode.commands.executeCommand<EditorGroupLayout>('vscode.getEditorLayout');
+  if (!layout) {
+    vscode.window.showErrorMessage('Could not get editor layout');
+    return null;
+  }
+
   const tabGroups = vscode.window.tabGroups;
   const visibleEditors: VisibleEditor[] = [];
   let activeSplitIndex = 0;
-
-  // Capture layout by counting groups and their arrangement
-  // For simplicity, we'll use a basic layout based on group count
-  const groupCount = tabGroups.all.length;
 
   for (let i = 0; i < tabGroups.all.length; i++) {
     const group = tabGroups.all[i];
@@ -161,12 +164,6 @@ function captureCurrentConfiguration(): WindowConfiguration | null {
     vscode.window.showWarningMessage('No visible editors to save');
     return null;
   }
-
-  // Build layout based on current arrangement
-  const layout: EditorGroupLayout = {
-    orientation: 0, // horizontal by default
-    groups: visibleEditors.map(() => ({})),
-  };
 
   return { layout, visibleEditors, activeSplitIndex };
 }
