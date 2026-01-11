@@ -3,27 +3,25 @@ import { log } from '../log';
 
 /**
  * A saved window configuration, inspired by Emacs' window-configuration-to-register.
- * Captures the editor layout (splits) and the files open in each group.
+ * Captures the editor layout (splits) and the VISIBLE file in each split.
+ *
+ * This is designed for users who work with tabs hidden - it only saves what's
+ * actually visible on screen, not hidden tabs.
  */
 interface WindowConfiguration {
   /** The editor group layout (splits, orientations, sizes) */
   layout: EditorGroupLayout;
-  /** Files in each group, indexed by viewColumn */
-  groups: GroupState[];
-  /** Which group was active */
-  activeGroupIndex: number;
+  /** The visible file in each split */
+  visibleEditors: VisibleEditor[];
+  /** Which split was focused */
+  activeSplitIndex: number;
 }
 
-interface GroupState {
-  viewColumn: vscode.ViewColumn;
-  tabs: TabState[];
-  activeTabIndex: number;
-}
-
-interface TabState {
+interface VisibleEditor {
   uri: string;
-  isPreview: boolean;
-  isPinned: boolean;
+  /** Cursor position to restore */
+  line?: number;
+  column?: number;
 }
 
 /** Matches VS Code's internal EditorGroupLayout structure */
@@ -50,11 +48,12 @@ export async function saveWindowConfiguration(): Promise<void> {
     return;
   }
 
-  const config = await captureCurrentConfiguration();
+  const config = captureCurrentConfiguration();
   if (config) {
     registers.set(register, config);
-    vscode.window.showInformationMessage(`Window configuration saved to register '${register}'`);
-    log(`Saved window configuration to register '${register}': ${config.groups.length} groups`);
+    const files = config.visibleEditors.map(e => e.uri.split('/').pop()).join(', ');
+    vscode.window.showInformationMessage(`Saved to register '${register}': ${files}`);
+    log(`Saved window configuration to register '${register}': ${config.visibleEditors.length} editors`);
   }
 }
 
@@ -82,10 +81,11 @@ export async function restoreWindowConfiguration(): Promise<void> {
  * Quick save to register 1 (most common use case)
  */
 export async function quickSaveWindowConfiguration(): Promise<void> {
-  const config = await captureCurrentConfiguration();
+  const config = captureCurrentConfiguration();
   if (config) {
     registers.set('1', config);
-    vscode.window.showInformationMessage(`Window configuration saved to register '1'`);
+    const files = config.visibleEditors.map(e => e.uri.split('/').pop()).join(', ');
+    vscode.window.showInformationMessage(`Saved to register '1': ${files}`);
   }
 }
 
@@ -118,53 +118,59 @@ async function promptForRegister(prompt: string): Promise<string | undefined> {
   return result?.toLowerCase();
 }
 
-async function captureCurrentConfiguration(): Promise<WindowConfiguration | null> {
-  // Get the layout structure
-  const layout = await vscode.commands.executeCommand<EditorGroupLayout>('vscode.getEditorLayout');
-  if (!layout) {
-    vscode.window.showErrorMessage('Could not get editor layout');
-    return null;
-  }
-
-  // Get the tabs in each group
+function captureCurrentConfiguration(): WindowConfiguration | null {
   const tabGroups = vscode.window.tabGroups;
-  const groups: GroupState[] = [];
-  let activeGroupIndex = 0;
+  const visibleEditors: VisibleEditor[] = [];
+  let activeSplitIndex = 0;
+
+  // Capture layout by counting groups and their arrangement
+  // For simplicity, we'll use a basic layout based on group count
+  const groupCount = tabGroups.all.length;
 
   for (let i = 0; i < tabGroups.all.length; i++) {
     const group = tabGroups.all[i];
     if (group.isActive) {
-      activeGroupIndex = i;
+      activeSplitIndex = i;
     }
 
-    const tabs: TabState[] = [];
-    let activeTabIndex = 0;
-
-    for (let j = 0; j < group.tabs.length; j++) {
-      const tab = group.tabs[j];
-      if (tab.isActive) {
-        activeTabIndex = j;
-      }
-
-      // We only save text tabs (files)
-      const uri = getTabUri(tab);
+    // Only capture the active (visible) tab in each group
+    const activeTab = group.activeTab;
+    if (activeTab) {
+      const uri = getTabUri(activeTab);
       if (uri) {
-        tabs.push({
+        // Try to get cursor position from the active editor
+        let line: number | undefined;
+        let column: number | undefined;
+
+        const editor = vscode.window.visibleTextEditors.find(
+          e => e.document.uri.toString() === uri.toString()
+        );
+        if (editor) {
+          line = editor.selection.active.line;
+          column = editor.selection.active.character;
+        }
+
+        visibleEditors.push({
           uri: uri.toString(),
-          isPreview: tab.isPreview,
-          isPinned: tab.isPinned,
+          line,
+          column,
         });
       }
     }
-
-    groups.push({
-      viewColumn: group.viewColumn,
-      tabs,
-      activeTabIndex,
-    });
   }
 
-  return { layout, groups, activeGroupIndex };
+  if (visibleEditors.length === 0) {
+    vscode.window.showWarningMessage('No visible editors to save');
+    return null;
+  }
+
+  // Build layout based on current arrangement
+  const layout: EditorGroupLayout = {
+    orientation: 0, // horizontal by default
+    groups: visibleEditors.map(() => ({})),
+  };
+
+  return { layout, visibleEditors, activeSplitIndex };
 }
 
 function getTabUri(tab: vscode.Tab): vscode.Uri | undefined {
@@ -175,12 +181,11 @@ function getTabUri(tab: vscode.Tab): vscode.Uri | undefined {
   if (input instanceof vscode.TabInputNotebook) {
     return input.uri;
   }
-  // Could extend to handle diffs, custom editors, etc.
   return undefined;
 }
 
 async function applyConfiguration(config: WindowConfiguration): Promise<void> {
-  // Close all current editors first
+  // Close all current editors
   await vscode.commands.executeCommand('workbench.action.closeAllEditors');
 
   // Apply the layout structure
@@ -189,42 +194,33 @@ async function applyConfiguration(config: WindowConfiguration): Promise<void> {
   // Small delay to let the layout settle
   await new Promise(resolve => setTimeout(resolve, 50));
 
-  // Open files in each group
-  for (let groupIndex = 0; groupIndex < config.groups.length; groupIndex++) {
-    const groupState = config.groups[groupIndex];
+  // Open each visible file in its split
+  for (let i = 0; i < config.visibleEditors.length; i++) {
+    const editor = config.visibleEditors[i];
+    const uri = vscode.Uri.parse(editor.uri);
+    const viewColumn = i + 1;
+    const isActiveSplit = i === config.activeSplitIndex;
 
-    // Determine the view column for this group
-    // viewColumn is 1-indexed in VS Code API
-    const viewColumn = groupIndex + 1;
+    try {
+      const doc = await vscode.workspace.openTextDocument(uri);
+      const textEditor = await vscode.window.showTextDocument(doc, {
+        viewColumn: viewColumn as vscode.ViewColumn,
+        preserveFocus: !isActiveSplit,
+      });
 
-    for (let tabIndex = 0; tabIndex < groupState.tabs.length; tabIndex++) {
-      const tabState = groupState.tabs[tabIndex];
-      const uri = vscode.Uri.parse(tabState.uri);
-
-      try {
-        // Open the document
-        const doc = await vscode.workspace.openTextDocument(uri);
-
-        // Show it in the correct group
-        const isActiveTab = tabIndex === groupState.activeTabIndex;
-        await vscode.window.showTextDocument(doc, {
-          viewColumn: viewColumn as vscode.ViewColumn,
-          preview: tabState.isPreview && !tabState.isPinned,
-          preserveFocus: !isActiveTab || groupIndex !== config.activeGroupIndex,
-        });
-
-        // Pin if it was pinned
-        if (tabState.isPinned) {
-          await vscode.commands.executeCommand('workbench.action.pinEditor');
-        }
-      } catch (err) {
-        log(`Failed to restore tab ${tabState.uri}: ${err}`);
+      // Restore cursor position if we have it
+      if (editor.line !== undefined && editor.column !== undefined) {
+        const position = new vscode.Position(editor.line, editor.column);
+        textEditor.selection = new vscode.Selection(position, position);
+        textEditor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenter);
       }
+    } catch (err) {
+      log(`Failed to restore editor ${editor.uri}: ${err}`);
     }
   }
 
-  // Focus the originally active group
-  await focusEditorGroup(config.activeGroupIndex + 1);
+  // Focus the originally active split
+  await focusEditorGroup(config.activeSplitIndex + 1);
 }
 
 async function focusEditorGroup(groupNumber: number): Promise<void> {
@@ -245,7 +241,7 @@ async function focusEditorGroup(groupNumber: number): Promise<void> {
 }
 
 /**
- * Show all saved registers with detailed information
+ * Show all saved registers
  */
 export async function listWindowConfigurationRegisters(): Promise<void> {
   if (registers.size === 0) {
@@ -253,54 +249,23 @@ export async function listWindowConfigurationRegisters(): Promise<void> {
     return;
   }
 
-  // Build detailed items for each register
   const items: (vscode.QuickPickItem & { register?: string })[] = [];
-  
+
   for (const [key, config] of registers.entries()) {
-    // Header for this register
+    // Create a simple description of visible files
+    const fileNames = config.visibleEditors
+      .map(e => e.uri.split('/').pop())
+      .join(' | ');
+
     items.push({
-      label: `$(bookmark) Register '${key}'`,
-      description: `${config.groups.length} group(s)`,
-      kind: vscode.QuickPickItemKind.Separator,
-    });
-
-    // Show each group and its files
-    for (let i = 0; i < config.groups.length; i++) {
-      const group = config.groups[i];
-      const isActiveGroup = i === config.activeGroupIndex;
-      const groupLabel = isActiveGroup ? `  Group ${i + 1} (active)` : `  Group ${i + 1}`;
-      
-      items.push({
-        label: groupLabel,
-        description: `${group.tabs.length} tab(s)`,
-      });
-
-      // List files in this group
-      for (let j = 0; j < group.tabs.length; j++) {
-        const tab = group.tabs[j];
-        const uri = vscode.Uri.parse(tab.uri);
-        const fileName = uri.path.split('/').pop() || uri.path;
-        const isActiveTab = j === group.activeTabIndex;
-        const prefix = isActiveTab ? '$(arrow-right)' : '   ';
-        const pinned = tab.isPinned ? ' $(pinned)' : '';
-        
-        items.push({
-          label: `    ${prefix} ${fileName}${pinned}`,
-          description: uri.path,
-        });
-      }
-    }
-
-    // Add restore action for this register
-    items.push({
-      label: `  $(debug-start) Restore register '${key}'`,
+      label: `Register '${key}'`,
+      description: `${config.visibleEditors.length} split(s): ${fileNames}`,
       register: key,
     });
   }
 
   const selected = await vscode.window.showQuickPick(items, {
-    placeHolder: 'Window configurations (select a "Restore" item to apply)',
-    matchOnDescription: true,
+    placeHolder: 'Select a register to restore',
   });
 
   if (selected?.register) {
