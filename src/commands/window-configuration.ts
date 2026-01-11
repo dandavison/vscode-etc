@@ -39,45 +39,6 @@ interface GroupLayoutArgument {
 const registers = new Map<string, WindowConfiguration>();
 
 /**
- * Save the current window configuration to a register.
- * Prompts the user for a register name.
- */
-export async function saveWindowConfiguration(): Promise<void> {
-  const register = await promptForRegister('Save window configuration to register');
-  if (register === undefined) {
-    return;
-  }
-
-  const config = captureCurrentConfiguration();
-  if (config) {
-    registers.set(register, config);
-    const files = config.visibleEditors.map(e => e.uri.split('/').pop()).join(', ');
-    vscode.window.showInformationMessage(`Saved to register '${register}': ${files}`);
-    log(`Saved window configuration to register '${register}': ${config.visibleEditors.length} editors`);
-  }
-}
-
-/**
- * Restore a window configuration from a register.
- * Prompts the user for a register name.
- */
-export async function restoreWindowConfiguration(): Promise<void> {
-  const register = await promptForRegister('Restore window configuration from register');
-  if (register === undefined) {
-    return;
-  }
-
-  const config = registers.get(register);
-  if (!config) {
-    vscode.window.showWarningMessage(`No window configuration in register '${register}'`);
-    return;
-  }
-
-  await applyConfiguration(config);
-  log(`Restored window configuration from register '${register}'`);
-}
-
-/**
  * Quick save to register 1 (most common use case)
  */
 export async function quickSaveWindowConfiguration(): Promise<void> {
@@ -99,23 +60,6 @@ export async function quickRestoreWindowConfiguration(): Promise<void> {
     return;
   }
   await applyConfiguration(config);
-}
-
-async function promptForRegister(prompt: string): Promise<string | undefined> {
-  const result = await vscode.window.showInputBox({
-    prompt,
-    placeHolder: 'Enter register (0-9, a-z)',
-    validateInput: (value) => {
-      if (value.length !== 1) {
-        return 'Register must be a single character';
-      }
-      if (!/^[0-9a-z]$/i.test(value)) {
-        return 'Register must be 0-9 or a-z';
-      }
-      return undefined;
-    },
-  });
-  return result?.toLowerCase();
 }
 
 function captureCurrentConfiguration(): WindowConfiguration | null {

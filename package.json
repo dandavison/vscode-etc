@@ -57,24 +57,16 @@
         "title": "Etc: Toggle Python Type Checking Mode"
       },
       {
-        "command": "etc.saveWindowConfiguration",
-        "title": "Etc: Save Window Configuration to Register"
-      },
-      {
-        "command": "etc.restoreWindowConfiguration",
-        "title": "Etc: Restore Window Configuration from Register"
-      },
-      {
         "command": "etc.quickSaveWindowConfiguration",
-        "title": "Etc: Quick Save Window Configuration (Register 1)"
+        "title": "Etc: Save Window Configuration"
       },
       {
         "command": "etc.quickRestoreWindowConfiguration",
-        "title": "Etc: Quick Restore Window Configuration (Register 1)"
+        "title": "Etc: Restore Window Configuration"
       },
       {
         "command": "etc.listWindowConfigurationRegisters",
-        "title": "Etc: List Window Configuration Registers"
+        "title": "Etc: List Window Configurations"
       }
     ],
     "configuration": {

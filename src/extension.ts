@@ -22,8 +22,6 @@ export function activate(context: vscode.ExtensionContext) {
     ['etc.ripgrep', ripgrep],
     ['etc.zoomPane', zoomPane],
     ['etc.openViaWormhole', wormhole.openViaWormhole],
-    ['etc.saveWindowConfiguration', windowConfig.saveWindowConfiguration],
-    ['etc.restoreWindowConfiguration', windowConfig.restoreWindowConfiguration],
     ['etc.quickSaveWindowConfiguration', windowConfig.quickSaveWindowConfiguration],
     ['etc.quickRestoreWindowConfiguration', windowConfig.quickRestoreWindowConfiguration],
     ['etc.listWindowConfigurationRegisters', windowConfig.listWindowConfigurationRegisters],
