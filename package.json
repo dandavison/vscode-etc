@@ -29,10 +29,6 @@
         "title": "Copy GitHub markdown URL"
       },
       {
-        "command": "etc.emacsclient",
-        "title": "Emacs"
-      },
-      {
         "command": "etc.gitBlame",
         "title": "Git Blame"
       },
@@ -51,10 +47,6 @@
       {
         "command": "etc.zoomPane",
         "title": "Zoom Pane"
-      },
-      {
-        "command": "etc.toggleCursorCpp",
-        "title": "Toggle Cursor Tab"
       },
       {
         "command": "etc.openViaWormhole",
