@@ -245,7 +245,7 @@ async function focusEditorGroup(groupNumber: number): Promise<void> {
 }
 
 /**
- * Show all saved registers
+ * Show all saved registers with detailed information
  */
 export async function listWindowConfigurationRegisters(): Promise<void> {
   if (registers.size === 0) {
@@ -253,17 +253,57 @@ export async function listWindowConfigurationRegisters(): Promise<void> {
     return;
   }
 
-  const items = Array.from(registers.entries()).map(([key, config]) => ({
-    label: `Register '${key}'`,
-    description: `${config.groups.length} groups, ${config.groups.reduce((acc, g) => acc + g.tabs.length, 0)} tabs`,
-    register: key,
-  }));
+  // Build detailed items for each register
+  const items: (vscode.QuickPickItem & { register?: string })[] = [];
+  
+  for (const [key, config] of registers.entries()) {
+    // Header for this register
+    items.push({
+      label: `$(bookmark) Register '${key}'`,
+      description: `${config.groups.length} group(s)`,
+      kind: vscode.QuickPickItemKind.Separator,
+    });
+
+    // Show each group and its files
+    for (let i = 0; i < config.groups.length; i++) {
+      const group = config.groups[i];
+      const isActiveGroup = i === config.activeGroupIndex;
+      const groupLabel = isActiveGroup ? `  Group ${i + 1} (active)` : `  Group ${i + 1}`;
+      
+      items.push({
+        label: groupLabel,
+        description: `${group.tabs.length} tab(s)`,
+      });
+
+      // List files in this group
+      for (let j = 0; j < group.tabs.length; j++) {
+        const tab = group.tabs[j];
+        const uri = vscode.Uri.parse(tab.uri);
+        const fileName = uri.path.split('/').pop() || uri.path;
+        const isActiveTab = j === group.activeTabIndex;
+        const prefix = isActiveTab ? '$(arrow-right)' : '   ';
+        const pinned = tab.isPinned ? ' $(pinned)' : '';
+        
+        items.push({
+          label: `    ${prefix} ${fileName}${pinned}`,
+          description: uri.path,
+        });
+      }
+    }
+
+    // Add restore action for this register
+    items.push({
+      label: `  $(debug-start) Restore register '${key}'`,
+      register: key,
+    });
+  }
 
   const selected = await vscode.window.showQuickPick(items, {
-    placeHolder: 'Select a register to restore',
+    placeHolder: 'Window configurations (select a "Restore" item to apply)',
+    matchOnDescription: true,
   });
 
-  if (selected) {
+  if (selected?.register) {
     const config = registers.get(selected.register);
     if (config) {
       await applyConfiguration(config);
