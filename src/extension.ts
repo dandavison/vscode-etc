@@ -57,6 +57,7 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   showExtensionVersion();
+  void vscode.commands.executeCommand('workbench.action.toggleZenMode');
   log('Etc activated');
 }
 
