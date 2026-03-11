@@ -58,6 +58,18 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.window.onDidChangeTextEditorSelection(() => updateFilePathStatus())
   );
 
+  context.subscriptions.push(
+    vscode.window.registerUriHandler({
+      handleUri(uri: vscode.Uri) {
+        const params = new URLSearchParams(uri.query);
+        const cmd = params.get('id');
+        if (cmd) {
+          vscode.commands.executeCommand(cmd);
+        }
+      }
+    })
+  );
+
   showExtensionVersion();
   log('Etc activated');
 }
