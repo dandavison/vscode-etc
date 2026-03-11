@@ -79,6 +79,10 @@
       {
         "command": "etc.listWindowConfigurationRegisters",
         "title": "Etc: List Window Configurations"
+      },
+      {
+        "command": "etc.pasteClipboardImage",
+        "title": "Etc: Paste Clipboard Image"
       }
     ],
     "configuration": {

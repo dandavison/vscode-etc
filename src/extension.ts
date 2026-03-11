@@ -11,6 +11,7 @@ import { togglePythonTypeCheckingMode } from './commands/toggle-python-type-chec
 import { createPythonTypeCheckingStatus, updateStatus } from './commands/python-type-checking-status';
 import { createFilePathStatus, updateFilePathStatus } from './commands/file-path-status';
 import * as windowConfig from './commands/window-configuration';
+import { pasteClipboardImage } from './commands/paste-clipboard-image';
 
 export function activate(context: vscode.ExtensionContext) {
   const catalog: [string, () => Promise<void>][] = [
@@ -28,6 +29,7 @@ export function activate(context: vscode.ExtensionContext) {
     ['etc.saveWindowConfiguration2', windowConfig.saveWindowConfiguration2],
     ['etc.restoreWindowConfiguration2', windowConfig.restoreWindowConfiguration2],
     ['etc.listWindowConfigurationRegisters', windowConfig.listWindowConfigurationRegisters],
+    ['etc.pasteClipboardImage', pasteClipboardImage],
   ];
   for (const [command, handler] of catalog) {
     context.subscriptions.push(
