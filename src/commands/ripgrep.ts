@@ -19,7 +19,10 @@ export async function ripgrep() {
   }
 
   const cmd = pattern ? `rgi '${pattern}'` : 'rgi';
-  await execAsync(`tmux send-keys C-c`);
-  await execAsync(`tmux send-keys '${cmd}' Enter`);
+  // Target the default socket explicitly: $TMUX may point at another server
+  // (e.g. wormhole-daemon) when this window was launched from within one, and
+  // we must not send keys there.
+  await execAsync(`tmux -L default send-keys C-c`);
+  await execAsync(`tmux -L default send-keys '${cmd}' Enter`);
   await execAsync('open -a Alacritty');
 }

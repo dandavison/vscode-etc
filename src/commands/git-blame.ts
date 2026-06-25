@@ -30,8 +30,10 @@ export async function gitBlame() {
   // Build the git blame command for the visible lines
   const cmd = `git -c delta.width=0 blame -L ${firstLine},${lastLine} '${path}'`;
 
-  // Send the command via tmux and open Alacritty
-  await execAsync(`tmux send-keys C-c C-l`);
-  await execAsync(`tmux send-keys '${cmd}' Enter`);
+  // Send the command via tmux and open Alacritty. Target the default socket
+  // explicitly: $TMUX may point at another server (e.g. wormhole-daemon) when
+  // this window was launched from within one, and we must not send keys there.
+  await execAsync(`tmux -L default send-keys C-c C-l`);
+  await execAsync(`tmux -L default send-keys '${cmd}' Enter`);
   await execAsync('open -a Alacritty');
 }
