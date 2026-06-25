@@ -83,6 +83,14 @@
       {
         "command": "etc.pasteClipboardImage",
         "title": "Etc: Paste Clipboard Image"
+      },
+      {
+        "command": "etc.toggleFold",
+        "title": "Etc: Toggle Fold (recursive)"
+      },
+      {
+        "command": "etc.toggleFoldAll",
+        "title": "Etc: Toggle Fold All"
       }
     ],
     "configuration": {

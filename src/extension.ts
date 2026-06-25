@@ -12,6 +12,7 @@ import { createPythonTypeCheckingStatus, updateStatus } from './commands/python-
 import { createFilePathStatus, updateFilePathStatus } from './commands/file-path-status';
 import * as windowConfig from './commands/window-configuration';
 import { pasteClipboardImage } from './commands/paste-clipboard-image';
+import { toggleFold, toggleFoldAll } from './commands/folding';
 
 export function activate(context: vscode.ExtensionContext) {
   const catalog: [string, () => Promise<void>][] = [
@@ -30,6 +31,8 @@ export function activate(context: vscode.ExtensionContext) {
     ['etc.restoreWindowConfiguration2', windowConfig.restoreWindowConfiguration2],
     ['etc.listWindowConfigurationRegisters', windowConfig.listWindowConfigurationRegisters],
     ['etc.pasteClipboardImage', pasteClipboardImage],
+    ['etc.toggleFold', toggleFold],
+    ['etc.toggleFoldAll', toggleFoldAll],
   ];
   for (const [command, handler] of catalog) {
     context.subscriptions.push(
