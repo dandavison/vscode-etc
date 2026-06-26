@@ -91,6 +91,10 @@
       {
         "command": "etc.toggleFoldAll",
         "title": "Etc: Toggle Fold All"
+      },
+      {
+        "command": "etc.tempFile",
+        "title": "Etc: Temp File"
       }
     ],
     "configuration": {

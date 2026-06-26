@@ -13,6 +13,7 @@ import { createFilePathStatus, updateFilePathStatus } from './commands/file-path
 import * as windowConfig from './commands/window-configuration';
 import { pasteClipboardImage } from './commands/paste-clipboard-image';
 import { toggleFold, toggleFoldAll } from './commands/folding';
+import { tempFile } from './commands/temp-file';
 
 export function activate(context: vscode.ExtensionContext) {
   const catalog: [string, () => Promise<void>][] = [
@@ -33,6 +34,7 @@ export function activate(context: vscode.ExtensionContext) {
     ['etc.pasteClipboardImage', pasteClipboardImage],
     ['etc.toggleFold', toggleFold],
     ['etc.toggleFoldAll', toggleFoldAll],
+    ['etc.tempFile', tempFile],
   ];
   for (const [command, handler] of catalog) {
     context.subscriptions.push(
