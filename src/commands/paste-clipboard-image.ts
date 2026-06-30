@@ -16,11 +16,13 @@ export async function pasteClipboardImage() {
   try {
     await execAsync(`pngpaste "${tmpFile}"`);
   } catch {
-    vscode.window.showErrorMessage('No image data in clipboard (pngpaste failed)');
+    vscode.window.showErrorMessage(
+      'No image data in clipboard (pngpaste failed)',
+    );
     return;
   }
 
-  await editor.edit(editBuilder => {
+  await editor.edit((editBuilder) => {
     editBuilder.insert(editor.selection.active, tmpFile);
   });
 }
