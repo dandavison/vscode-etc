@@ -14,6 +14,7 @@ import * as windowConfig from './commands/window-configuration';
 import { pasteClipboardImage } from './commands/paste-clipboard-image';
 import { toggleFold, toggleFoldAll } from './commands/folding';
 import { tempFile } from './commands/temp-file';
+import { revertAllEditors } from './commands/revert-all-editors';
 
 export function activate(context: vscode.ExtensionContext) {
   const catalog: [string, () => Promise<void>][] = [
@@ -35,6 +36,7 @@ export function activate(context: vscode.ExtensionContext) {
     ['etc.toggleFold', toggleFold],
     ['etc.toggleFoldAll', toggleFoldAll],
     ['etc.tempFile', tempFile],
+    ['etc.revertAllEditors', revertAllEditors],
   ];
   for (const [command, handler] of catalog) {
     context.subscriptions.push(
