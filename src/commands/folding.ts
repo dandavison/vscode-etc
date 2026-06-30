@@ -27,6 +27,7 @@ export async function toggleFoldAll() {
     return;
   }
   const folded = hasFoldInRange(editor, region);
+  const saved = editor.selection;
   editor.selection = new vscode.Selection(region.start, region.start);
   if (folded) {
     await vscode.commands.executeCommand('editor.unfoldRecursively');
@@ -34,6 +35,7 @@ export async function toggleFoldAll() {
     await vscode.commands.executeCommand('editor.foldRecursively');
     await vscode.commands.executeCommand('editor.unfold');
   }
+  editor.selection = saved;
 }
 
 function isFoldedAt(editor: vscode.TextEditor, line: number): boolean {
