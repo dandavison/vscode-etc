@@ -45,6 +45,10 @@
         "title": "Etc: Ripgrep"
       },
       {
+        "command": "etc.rgi",
+        "title": "Etc: rgi"
+      },
+      {
         "command": "etc.zoomPane",
         "title": "Etc: Zoom Pane"
       },
@@ -99,6 +103,13 @@
       {
         "command": "etc.revertAllEditors",
         "title": "Etc: Revert All Editors"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "etc.rgi",
+        "key": "shift+cmd+f",
+        "mac": "shift+cmd+f"
       }
     ],
     "configuration": {

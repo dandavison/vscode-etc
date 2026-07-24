@@ -5,7 +5,9 @@ import { gitBlame } from './commands/git-blame';
 import { zoomPane } from './commands/zoom-pane';
 import { showExtensionVersion } from './commands/show-extension-version';
 import { ripgrep } from './commands/ripgrep';
+import { rgi } from './commands/rgi';
 import { log } from './log';
+import * as server from './api/server';
 import * as wormhole from './commands/wormhole';
 import { togglePythonTypeCheckingMode } from './commands/toggle-python-type-checking';
 import { createPythonTypeCheckingStatus, updateStatus } from './commands/python-type-checking-status';
@@ -24,6 +26,7 @@ export function activate(context: vscode.ExtensionContext) {
     ['etc.magitStatus', magitStatus],
     ['etc.magitShow', magitShow],
     ['etc.ripgrep', ripgrep],
+    ['etc.rgi', rgi],
     ['etc.zoomPane', zoomPane],
     ['etc.openViaWormhole', wormhole.openViaWormhole],
     ['etc.saveWindowConfiguration', windowConfig.saveWindowConfiguration],
@@ -78,6 +81,7 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   showExtensionVersion();
+  server.activate(context);
   log('Etc activated');
 }
 
