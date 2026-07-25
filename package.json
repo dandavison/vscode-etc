@@ -33,6 +33,10 @@
         "title": "Etc: Git Blame"
       },
       {
+        "command": "etc.goTest",
+        "title": "Etc: Go Test"
+      },
+      {
         "command": "etc.magitStatus",
         "title": "Etc: Magit Status"
       },

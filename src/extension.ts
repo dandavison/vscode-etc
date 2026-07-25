@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as githubUrl from './commands/copy-github-url';
 import { magitStatus, magitShow } from './commands/magit-status';
 import { gitBlame } from './commands/git-blame';
+import { goTest } from './commands/go-test';
 import { zoomPane } from './commands/zoom-pane';
 import { showExtensionVersion } from './commands/show-extension-version';
 import { ripgrep } from './commands/ripgrep';
@@ -23,6 +24,7 @@ export function activate(context: vscode.ExtensionContext) {
     ['etc.copyGithubUrl', githubUrl.copyGithubUrl],
     ['etc.copyGithubMarkdownUrl', githubUrl.copyGithubMarkdownUrl],
     ['etc.gitBlame', gitBlame],
+    ['etc.goTest', goTest],
     ['etc.magitStatus', magitStatus],
     ['etc.magitShow', magitShow],
     ['etc.ripgrep', ripgrep],
