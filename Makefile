@@ -1,6 +1,9 @@
-install: clean build uninstall
+install: node_modules clean build uninstall
 	code --install-extension vscode-etc-*.vsix --force
 	code --list-extensions --show-versions | grep vscode-etc
+
+node_modules:
+	npm i
 
 clean:
 	@rm *.vsix 2>/dev/null || true
